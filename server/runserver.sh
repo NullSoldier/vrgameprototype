@@ -1,0 +1,3 @@
+(
+	node --harmony index.js
+)
