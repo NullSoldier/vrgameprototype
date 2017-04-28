@@ -1,0 +1,27 @@
+var GAME_STATE = {
+	WAITING: 'WAITING',
+	PLAYING: 'PLAYING',
+	FAIL: 'FAIL',
+};
+
+var VECTORS = {
+	CENTER: 'CENTER',
+	LEFT: 'LEFT',
+	RIGHT: 'RIGHT',
+};
+
+var ROOMS = {
+	TOP_WHITE   : 'WHITE',
+	TOP_RED     : 'TOP_RED',
+	TOP_BLUE    : 'TOP_BLUE',
+	BOTTOM_WHITE: 'WHITE',
+	BOTTOM_RED  : 'BOTTOM_RED',
+	BOTTOM_BLUE : 'BOTTOM_BLUE',
+};
+
+
+module.exports = {
+	VECTORS: VECTORS,
+	ROOMS: ROOMS,
+	GAME_STATE: GAME_STATE,
+}
