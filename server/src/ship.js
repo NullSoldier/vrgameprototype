@@ -1,11 +1,57 @@
-const VECTORS = require('./constants').VECTORS;
+const EnergyGun      = require('./guns').EnergyGun;
+const ROOMS          = require('./constants').ROOMS;
+const ShortRangeWave = require('./guns').ShortRangeWave;
+const VECTORS        = require('./constants').VECTORS;
+
+class Room {
+	constructor(game, ship, room) {
+		this.game = game;
+		this.ship = ship;
+		this.room = room;
+	}
+}
+
+class WeaponRoom extends Room {
+	constructor(game, ship, room, track) {
+		super(game, ship, room);
+		this.gun = new EnergyGun(track);
+	}
+
+	fireGun() {
+		this.gun.fire();
+		this.ship.firedGuns.push(this.gun);
+	}
+}
+
+class ReactorRoom extends Room {
+	constructor(game, ship, room) {
+		super(game, ship, room);
+		this.gun = new ShortRangeWave(game);
+	}
+
+	fireGun() {
+		this.gun.fire();
+		this.ship.firedGuns.push(this.gun);
+	}
+}
 
 class Ship {
-	constructor() {
+	constructor(game) {
+		this.game = game;
+		this.firedGuns = [];
+
 		this.health = {}
 		this.health[VECTORS.LEFT] = 6;
 		this.health[VECTORS.CENTER] = 6;
 		this.health[VECTORS.RIGHT] = 6;
+
+		this.rooms = {};
+		this.rooms[ROOMS.TOP_LEFT] = new WeaponRoom(this.game, this, ROOMS.TOP_LEFT, this.game.tracks[VECTORS.LEFT]);
+		this.rooms[ROOMS.TOP_CENTER] = new Room(this.game, this, ROOMS.TOP_CENTER);
+		this.rooms[ROOMS.TOP_RIGHT] = new WeaponRoom(this.game, this, ROOMS.TOP_RIGHT, this.game.tracks[VECTORS.RIGHT]);
+		this.rooms[ROOMS.BOTTOM_LEFT] = new Room(this.game, this, ROOMS.BOTTOM_LEFT);
+		this.rooms[ROOMS.BOTTOM_CENTER] = new ReactorRoom(this.game, this, ROOMS.BOTTOM_CENTER);
+		this.rooms[ROOMS.BOTTOM_RIGHT] = new Room(this.game, this, ROOMS.BOTTOM_RIGHT);
 	}
 
 	renderRoom(buffer, originX, originY, width, height) {
