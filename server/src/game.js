@@ -2,42 +2,26 @@ const _          = require('lodash');
 const Destroyer  = require('./threats').Destroyer;
 const GAME_STATE = require('./constants').GAME_STATE;
 const GameTimer  = require('./gametimer');
+const Log        = require('./log');
 const ROOMS      = require('./constants').ROOMS;
 const Ship       = require('./ship');
 const Track      = require('./track');
 const VECTORS    = require('./constants').VECTORS;
 
-
-const TURN_LENGTH = 1000
-
-class Log {
-	constructor() {
-		this.maxSize = 10;
-		this.items = [];
-	}
-
-	write(text) {
-		console.log(text);
-		this.items.push(text);
-
-		if(this.items.length > this.maxSize)
-			this.items.shift();
-	}
-
-	render(text) {
-		return this.items.join('\n');
-	}
-}
+const TURN_LENGTH = 2000;
 
 class Game {
-	constructor() {
+	constructor(sockets) {
 		this.turn = 0;
 		this.turnTimer = new GameTimer(TURN_LENGTH);
 		this.threats = [];
-		this.state = GAME_STATE.WAITING;
+		this.state = null;;
 		this.nextState = null;
 		this.lastId = 0;
 		this.log = new Log();
+		this.playerActions = [];
+		this.sockets = sockets;
+		this.players = [];
 		
 		this.tracks = {};
 		this.tracks[VECTORS.LEFT] = new Track(this, VECTORS.LEFT, 15, 12, 8, 0);
@@ -46,6 +30,8 @@ class Game {
 
 		// dependency on tracks
 		this.ship = new Ship(this);
+
+		this.goToState(GAME_STATE.WAITING);
 	}
 
 	start() {
@@ -72,11 +58,18 @@ class Game {
 			this[this.state + '_update'](deltaMs);
 	}
 
+	WAITING_enter() {
+		this.log.write('Waiting to start...');
+	}
+
+	WAITING_update(deltaMs) {
+		this.render(true);
+	}
+
 	PLAYING_update(deltaMs) {
 		if(this.turnTimer.update(deltaMs)) {
 			this.turnTimer.reset();
 			this.nextTurn();
-			 // foo
 			this.render(true);
 		}
 	}
@@ -92,14 +85,12 @@ class Game {
 	nextTurn() {
 		this.turn++;
 
-		// if(this.turn === 3)
-		// 	this.ship.rooms[ROOMS.BOTTOM_CENTER].fireGun();
-		if(this.turn === 4)
-			this.ship.rooms[ROOMS.BOTTOM_CENTER].fireGun();
-		if(this.turn === 4)
-			this.ship.rooms[ROOMS.TOP_LEFT].fireGun();
-		if(this.turn === 5)
-			this.ship.rooms[ROOMS.BOTTOM_CENTER].fireGun();
+		this.simulatePlayerActions();
+
+		while(this.playerActions.length) {
+			var action = this.playerActions.pop();
+			action();
+		}
 
 		this.resolveGuns();
 
@@ -112,15 +103,29 @@ class Game {
 
 		_.filter(this.threats, t => t.distance <= 0).forEach(t => this.surviveThreat(t));
 
-		if(this.turn === 1) {
+		if(this.turn === 1)
 			this.spawnThreat(VECTORS.LEFT);
-			this.spawnThreat(VECTORS.CENTER);
+		if(this.turn === 3)
 			this.spawnThreat(VECTORS.RIGHT);
-		}
-		// if(this.turn === 6)
-		// 	this.spawnThreat(VECTORS.RIGHT);
+		if(this.turn === 5)
+			this.spawnThreat(VECTORS.CENTER);
+
+		this.sendFullState();
+	}
+
+	simulatePlayerActions() {
+		// if(this.turn === 3)
+		// 	this.ship.rooms[ROOMS.BOTTOM_CENTER].fireGun();
 		// if(this.turn === 4)
-		// 	this.spawnThreat(VECTORS.LEFT);
+		// 	this.ship.rooms[ROOMS.BOTTOM_CENTER].fireGun();
+		if(this.turn === 7)
+			this.ship.rooms[ROOMS.TOP_LEFT].fireGun();
+		if(this.turn === 7)
+			this.ship.rooms[ROOMS.BOTTOM_CENTER].fireGun();
+		if(this.turn === 8)
+			this.ship.rooms[ROOMS.TOP_RIGHT].fireGun();
+		if(this.turn === 10)
+			this.ship.rooms[ROOMS.TOP_RIGHT].fireGun();
 	}
 
 	resolveGuns() {
@@ -176,23 +181,63 @@ class Game {
 	render(clear) {
 		var buffer = [];
 
-		buffer.push(this.log.render());
-		buffer.push('');
+		if(this.state === GAME_STATE.PLAYING) {
+			for(var threat of this.threats) {
+				buffer.push(threat.renderStats() + '\n' + threat.renderAttacks() + '\n');
+			}
 
-		for(var threat of this.threats) {
-			buffer.push(threat.renderStats() + '\n' + threat.renderAttacks() + '\n');
+			buffer.push(`Tick ${this.turn}`);
+			buffer.push(this.tracks[VECTORS.LEFT].render());
+			buffer.push(this.tracks[VECTORS.CENTER].render());
+			buffer.push(this.tracks[VECTORS.RIGHT].render());
+			// buffer.push('');
+			// buffer.push(this.ship.render());
+			buffer.push('');
 		}
 
-		buffer.push(`Turn ${this.turn}`);
-		buffer.push(this.tracks[VECTORS.LEFT].render());
-		buffer.push(this.tracks[VECTORS.CENTER].render());
-		buffer.push(this.tracks[VECTORS.RIGHT].render());
-		buffer.push('');
-		buffer.push(this.ship.render());
+		buffer.push(this.log.render());
 
 		if(clear)
 			console.log('\x1B[2J');
 		console.log(buffer.join('\n'));
+	}
+
+	movePlayer(player, roomName) {
+		this.log.write(`Moving ${id} to ${roomName}`)
+		var room = this.ship.rooms[roomName];
+		player.room = room;
+	}
+
+	doAction(player, action) {
+		this.log.write(`Player ${id} doing ${action} in ${player.room.room}`)
+		this.playerActions.push(() => player.room.tryAction(player, action));
+	}
+
+	addPlayer(player) {
+		if(this.state !== GAME_STATE.WAITING) {
+			player.socket.emit('already_in_progress');
+			this.log.write('Rejected: already_in_progress');
+			return;
+		}
+
+		this.log.write(`Player ${player.id} joined`)
+		this.players.push(player);
+		player.socket.emit('joined', player.serialize());
+		this.sockets.emit('playerjoined', player.serialize());
+		this.sendFullState();
+	}
+
+	removePlayer(playerId) {
+		_.remove(this.players, (p) => p.id === playerId);
+		this.log.write(`Player ${playerId} left`);
+	}
+
+	sendFullState() {
+		this.sockets.emit('gamestate', {
+			state  : this.state,
+			players: _.map(this.players, p => p.serialize()),
+			rooms  : _.map(this.rooms, r => r.serialize()),
+		});
 	}
 }
 

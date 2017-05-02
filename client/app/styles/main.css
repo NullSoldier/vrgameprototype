@@ -1,0 +1,45 @@
+body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+    font-size: 16px !important;
+    background-color: black;
+}
+
+
+.map {
+    width: 150px;
+    height: 100px;
+}
+
+.map > .map-room {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+}
+
+.map > .map-room.active {
+    border: 4px solid black;
+}
+
+.map > .map-top-left {
+    background-color: red;
+}
+
+.map > .map-top-center {
+    background-color: gray;
+}
+
+.map > .map-top-right {
+    background-color: blue;
+}
+
+.map > .map-bottom-left {
+    background-color: red;
+}
+
+.map > .map-bottom-center {
+    background-color: gray;
+}
+
+.map > .map-bottom-right {
+    background-color: blue;
+}

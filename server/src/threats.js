@@ -39,7 +39,7 @@ class Threat {
 	}
 
 	renderStats() {
-		return `${this.name} ${this.health} (HP) ${this.speed} (SP) ${this.shields} (SH)`;
+		return `${this.name}, ${this.health} (HP) ${this.speed} (SP) ${this.shields} (SH)`;
 	}
 
 	renderAttacks() {
@@ -61,7 +61,7 @@ class Threat {
 class Destroyer extends Threat {
 	constructor(game, track) {
 		super(game, track);
-		this.name = 'Destroyer';
+		this.name = 'Destroyer#' + this.id;
 		this.speed = 2;
 		this.health = 5;
 		this.shields = 1;

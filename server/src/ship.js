@@ -68,7 +68,7 @@ class Ship {
 	}
 
 	renderFront(buffer, width) {
-		for(var x=0; x <= width; ++x) {
+		for(var x=16; x <= 20; ++x) {
 			buffer[0][x] = '^';
 		}
 	}
@@ -82,7 +82,7 @@ class Ship {
 			for(var x=0; x <= WIDTH; ++x) {
 				if(!buffer[y])
 					buffer[y] = [];
-				buffer[y][x] = '.';
+				buffer[y][x] = ' ';
 			}
 		}
 

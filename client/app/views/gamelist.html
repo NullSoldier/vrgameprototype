@@ -1,0 +1,55 @@
+<div ng-if="state === 'NOT_CONNECTED'">
+    Connecting...
+</div>
+
+<div ng-if="state === 'CONNECTED'">
+    Joining
+</div>
+
+<div ng-if="state === 'WAITING'">
+    <div>
+        Waiting for players...<br>
+        <button ng-click="startGame()">Start Game</button>
+    </div>
+
+    <div>
+        Players
+        <ul>
+            <li ng-repeat="player in players">{{player.id}}</li>
+        </ul>
+    </div>
+</div>
+
+<div ng-if="state === 'PLAYING'">
+    <h2>Map</h2>
+    <div class="map"><!--
+        --><div class="map-room map-top-left active"></div><!--
+        --><div class="map-room map-top-center"></div><!--
+        --><div class="map-room map-top-right"></div><!--
+        --><div class="map-room map-bottom-left"></div><!--
+        --><div class="map-room map-bottom-center"></div><!--
+        --><div class="map-room map-bottom-right"></div>
+    </div>
+
+    <h1>{{state}}</h1>
+
+    <div ng-if="room === 'TOP_LEFT'" ng-class="room">
+        <h2>Upper Left</h2>
+
+        <div>
+            <h3>Energy Gun</h3>
+            <ul>
+                <li><b>Range</b> X, Y, Z</li>
+                <li><b>Damage</b> 4</li>
+            </ul>
+            <button
+                display="inline-block"
+                style="width:130px"
+                ng-click="fireTopLeft()">
+                Fire
+            </button>
+        </div>
+
+    </div>
+
+</div>

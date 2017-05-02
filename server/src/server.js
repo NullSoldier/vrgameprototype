@@ -1,11 +1,12 @@
 const express  = require('express');
 const Game     = require('./game');
 const http     = require('http');
+const Player   = require('./player');
 const socketIo = require('socket.io');
 
 const settings = {
-	PORT: 3002,
-	PUBLIC_ROOT: `${__dirname}/../client/dist`
+	PORT: 8000,
+	PUBLIC_ROOT: `${__dirname}/../../client/dist`
 };
 
 
@@ -13,28 +14,34 @@ class Server {
 	constructor() {
 		this.express = express();
 		this.http    = http.createServer(this.express);
-		this.socket  = socketIo(this.http).of('socket');
-		this.game    = new Game(this.socket);
+		this.sockets  = socketIo(this.http);
+		this.game    = new Game(this.sockets);
 
 		this.lastTime = null;
 		this.express.use(express.static(settings.PUBLIC_ROOT));
 	}
 
 	start() {
-		console.log('Server starting at port %d', settings.PORT);
+		this.game.log.write(`Server starting at port ${settings.PORT}`);
+		this.game.log.write(`Serving assets at ${settings.PUBLIC_ROOT}`);
 
 		var self = this;
 		this.http.listen(settings.PORT, function() {
-			console.log(`Server started...`);
+			self.game.log.write('Server started...');
 			self.isRunning = true;
 			self.lastTime = Date.now();
-			self.game.start();
 			self.run();
+
+			self.sockets.on('connection', function(socket) {
+				self.game.log.write('Connected ' + socket.id);
+				socket.on('disconnect', self.socket_disconnect.bind(self, socket));
+				socket.on('join', self.socket_join.bind(self, socket));
+				socket.on('start', self.socket_start.bind(self, socket));
+			})
 		});
 	}
 
 	stop() {
-		this.socket.emit('tweet', 'goodbye world');
 		this.isRunning = false;
 		this.http.close();
 	}
@@ -43,11 +50,24 @@ class Server {
 		if(!this.isRunning)
 			return;
 
-		var time = Date.now();
+		const time = Date.now();
 		this.game.update(time - this.lastTime);
 		this.lastTime = time;
-		
+
 		setTimeout(this.run.bind(this));
+	}
+
+	socket_disconnect(socket) {
+		this.game.log.write('Disconnected ' + socket.id);
+		this.game.removePlayer(socket.id);
+	}
+
+	socket_join(socket) {
+		this.game.addPlayer(new Player(socket));
+	}
+
+	socket_start(socket, data) {
+		this.game.start();
 	}
 }
 
