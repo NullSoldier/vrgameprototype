@@ -58,7 +58,7 @@ class ShortRangeWave extends Gun {
 	constructor(game) {
 		super();
 		this.game = game;
-		this.damage = 2;
+		this.damage = 1;
 		this.range = 2;
 	}
 
@@ -71,7 +71,21 @@ class ShortRangeWave extends Gun {
 	}
 }
 
+class ElectricGun extends Gun {
+	constructor(track) {
+		super();
+		this.track = track;
+		this.damage = 2;
+		this.range = 3;
+	}
+
+	getTargets() {
+		return _.filter([this.getTargetInTrack(this.track)]);
+	}
+}
+
 module.exports = {
 	EnergyGun     : EnergyGun,
 	ShortRangeWave: ShortRangeWave,
+	ElectricGun   : ElectricGun,
 };

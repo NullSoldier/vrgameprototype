@@ -9,11 +9,13 @@ const Track      = require('./track');
 const VECTORS    = require('./constants').VECTORS;
 
 const TURN_LENGTH = 2000;
+const STATE_DELAY = 100;
 
 class Game {
 	constructor(sockets) {
 		this.turn = 0;
 		this.turnTimer = new GameTimer(TURN_LENGTH);
+		this.stateTimer = new GameTimer(STATE_DELAY);
 		this.threats = [];
 		this.state = null;;
 		this.nextState = null;
@@ -35,6 +37,8 @@ class Game {
 	}
 
 	start() {
+		for(var player of this.players)
+			player.move(this.ship.rooms[ROOMS.TOP_CENTER]);
 		this.goToState(GAME_STATE.PLAYING);
 	}
 
@@ -63,14 +67,19 @@ class Game {
 	}
 
 	WAITING_update(deltaMs) {
-		this.render(true);
+		// this.render(true);
 	}
 
 	PLAYING_update(deltaMs) {
 		if(this.turnTimer.update(deltaMs)) {
 			this.turnTimer.reset();
 			this.nextTurn();
-			this.render(true);
+			// this.render(true);
+		}
+
+		if(this.stateTimer.update(deltaMs)) {
+			this.stateTimer.reset();
+			this.sendFullState();
 		}
 	}
 
@@ -203,20 +212,29 @@ class Game {
 	}
 
 	movePlayer(player, roomName) {
-		this.log.write(`Moving ${id} to ${roomName}`)
+		this.log.write(`Moving ${player.id} to ${roomName}`)
 		var room = this.ship.rooms[roomName];
 		player.room = room;
 	}
 
+	onShipHit() {
+		this.sockets.emit('shiphit', {});
+	}
+
 	doAction(player, action) {
-		this.log.write(`Player ${id} doing ${action} in ${player.room.room}`)
-		this.playerActions.push(() => player.room.tryAction(player, action));
+		this.log.write(`Player ${player.id} doing ${action.name} in ${action.room}`)
+		this.playerActions.push(() => this.ship.rooms[action.room].tryAction(player, action));
+	}
+
+	getPlayer(playerId) {
+		return _.find(this.players, {id: playerId});
 	}
 
 	addPlayer(player) {
 		if(this.state !== GAME_STATE.WAITING) {
-			player.socket.emit('already_in_progress');
+			player.socket.emit('alreadyinprogress');
 			this.log.write('Rejected: already_in_progress');
+			player.socket.disconnect();
 			return;
 		}
 
@@ -227,16 +245,21 @@ class Game {
 		this.sendFullState();
 	}
 
-	removePlayer(playerId) {
-		_.remove(this.players, (p) => p.id === playerId);
-		this.log.write(`Player ${playerId} left`);
+	removePlayer(player) {
+		_.remove(this.players, (p) => p.id === player.id);
+		this.log.write(`Player ${player.id} left`);
+		this.sockets.emit('playerleft', player.serialize());
+		this.sendFullState();
 	}
 
 	sendFullState() {
 		this.sockets.emit('gamestate', {
 			state  : this.state,
+			ship   : this.ship.serialize(),
 			players: _.map(this.players, p => p.serialize()),
 			rooms  : _.map(this.rooms, r => r.serialize()),
+			threats: _.map(this.threats, t => t.serialize()),
+			tracks : _.map(_.values(this.tracks), t => t.serialize()),
 		});
 	}
 }

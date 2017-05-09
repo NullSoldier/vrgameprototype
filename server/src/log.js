@@ -8,6 +8,7 @@ class Log {
 	}
 
 	write(text) {
+		console.info(text);
 		this.items.push(text);
 	}
 

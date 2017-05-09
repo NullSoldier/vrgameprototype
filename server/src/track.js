@@ -29,6 +29,16 @@ class Track {
 
 		return result;
 	}
+
+	serialize() {
+		return {
+			xPos  : this.xPos,
+			yPos  : this.yPos,
+			zPos  : this.zPos,
+			length: this.length,
+			vector: this.vector,
+		};
+	}
 }
 
 module.exports = Track;

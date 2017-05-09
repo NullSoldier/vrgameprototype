@@ -14,12 +14,14 @@ class Threat {
 
 	attackCurrentZone(game, damage) {
 		game.ship.health[this.track.vector] -= damage;
+		game.onShipHit();
 	}
 
 	attackAllZones(game, damage) {
 		game.ship.health[VECTORS.LEFT] -= damage;
 		game.ship.health[VECTORS.CENTER] -= damage;
 		game.ship.health[VECTORS.RIGHT] -= damage;
+		game.onShipHit();
 	}
 
 	attackX(game) {
@@ -55,6 +57,19 @@ class Threat {
 			if(this.triggers[0] === this.track.zPos) this.attackZ(this.game);
 			this.triggers.shift();
 		}
+	}
+
+	serialize() {
+		return {
+			id      : this.id,
+			name    : this.name,
+			health  : this.health,
+			speed   : this.speed,
+			shields : this.shields,
+			track   : this.track.vector,
+			triggers: this.triggers,
+			distance: this.distance,
+		};
 	}
 }
 

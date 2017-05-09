@@ -1,55 +1,175 @@
-<div ng-if="state === 'NOT_CONNECTED'">
-    Connecting...
-</div>
-
-<div ng-if="state === 'CONNECTED'">
-    Joining
-</div>
-
-<div ng-if="state === 'WAITING'">
-    <div>
-        Waiting for players...<br>
-        <button ng-click="startGame()">Start Game</button>
+<div class="play-container" ng-class="{'enable-screen-shake': enableScreenShake}">
+    <div ng-if="state === 'NOT_CONNECTED'">
+        Connecting...
     </div>
 
-    <div>
-        Players
-        <ul>
-            <li ng-repeat="player in players">{{player.id}}</li>
-        </ul>
-    </div>
-</div>
-
-<div ng-if="state === 'PLAYING'">
-    <h2>Map</h2>
-    <div class="map"><!--
-        --><div class="map-room map-top-left active"></div><!--
-        --><div class="map-room map-top-center"></div><!--
-        --><div class="map-room map-top-right"></div><!--
-        --><div class="map-room map-bottom-left"></div><!--
-        --><div class="map-room map-bottom-center"></div><!--
-        --><div class="map-room map-bottom-right"></div>
+    <div ng-if="state === 'CONNECTED'">
+        Joining
     </div>
 
-    <h1>{{state}}</h1>
-
-    <div ng-if="room === 'TOP_LEFT'" ng-class="room">
-        <h2>Upper Left</h2>
-
+    <div ng-if="state === 'WAITING'">
         <div>
-            <h3>Energy Gun</h3>
-            <ul>
-                <li><b>Range</b> X, Y, Z</li>
-                <li><b>Damage</b> 4</li>
-            </ul>
-            <button
-                display="inline-block"
-                style="width:130px"
-                ng-click="fireTopLeft()">
-                Fire
-            </button>
+            Waiting for players...<br>
+            <button ng-click="startGame()">Start Game</button>
         </div>
 
+        <div>
+            Players
+            <ul>
+                <li ng-repeat="p in players track by p.id">{{p.id}} <span ng-if="p.id === player.id">(ME)</span></li>
+            </ul>
+        </div>
     </div>
 
+    <div ng-if="state === 'REJECTED'">
+        Server rejected client: {{reason}}
+    </div>
+
+    <div ng-if="state === 'PLAYING'">
+
+        <div ng-if="debug">
+            Player: {{player}}<br/>
+            Tracks: {{tracks}}<br/>
+            Threats: {{threats}}<br/>
+            Ship: {{ship}}<br/>
+        </div>
+
+        <h2>Your Ship</h2>
+        <div class="map"><!--
+            --><div class="map-room map-top-left" ng-click="movePlayer('TOP_LEFT')" ng-class="{active: player.room == 'TOP_LEFT'}"></div><!--
+            --><div class="map-room map-top-center" ng-click="movePlayer('TOP_CENTER')" ng-class="{active: player.room == 'TOP_CENTER'}"></div><!--
+            --><div class="map-room map-top-right" ng-click="movePlayer('TOP_RIGHT')" ng-class="{active: player.room == 'TOP_RIGHT'}"></div><!--
+            --><div class="map-room map-bottom-left" ng-click="movePlayer('BOTTOM_LEFT')" ng-class="{active: player.room == 'BOTTOM_LEFT'}"></div><!--
+            --><div class="map-room map-bottom-center" ng-click="movePlayer('BOTTOM_CENTER')" ng-class="{active: player.room == 'BOTTOM_CENTER'}"></div><!--
+            --><div class="map-room map-bottom-right" ng-click="movePlayer('BOTTOM_RIGHT')" ng-class="{active: player.room == 'BOTTOM_RIGHT'}"></div>
+        </div>
+
+        <div ng-if="player.room === 'TOP_LEFT'" ng-class="room">
+            <h2>Upper Left</h2>
+            <div>
+                <h3>Energy Gun</h3>
+                <ul>
+                    <li><b>Range</b> X, Y, Z</li>
+                    <li><b>Damage</b> 4</li>
+                </ul>
+                <button
+                    display="inline-block"
+                    style="width:130px"
+                    ng-click="fireGun()">
+                    Fire
+                </button>
+            </div>
+        </div>
+
+        <div ng-if="player.room === 'TOP_CENTER'" ng-class="room">
+            <h2>Bridge</h2>
+
+            <div>
+                <h3>Threat Monitor</h3>
+                <div class="tracks-container">
+                    <table>
+                        <tr>
+                            <td ng-repeat="track in tracks track by track.vector">
+                                <table class="track">
+                                    <tr><td>{{track.vector}}, {{ship.health[track.vector]}} HP</td></tr>
+                                    <tr ng-repeat="cell in getCells(track) track by $index">
+                                        <td ng-class="{
+                                            trackz: (track.length-1) - $index <= track.zPos,
+                                            tracky: (track.length-1) - $index <= track.yPos && (track.length-1) - $index > track.zPos,
+                                            trackx: (track.length-1) - $index <= track.xPos && (track.length-1) - $index > track.yPos}">
+                                            &nbsp;<span ng-repeat="threat in getThreatsAt(track.vector, (track.length - 1) - $index) track by threat.id">{{threat.name}}</span>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <div>
+                <h3>Energy Gun</h3>
+                <ul>
+                    <li><b>Range</b> X, Y, Z</li>
+                    <li><b>Damage</b> 4</li>
+                </ul>
+                <button
+                    display="inline-block"
+                    style="width:130px"
+                    ng-click="fireGun()">
+                    Fire
+                </button>
+            </div>
+        </div>
+
+        <div ng-if="player.room === 'TOP_RIGHT'" ng-class="room">
+            <h2>Upper Left</h2>
+            <div>
+                <h3>Energy Gun</h3>
+                <ul>
+                    <li><b>Range</b> X, Y, Z</li>
+                    <li><b>Damage</b> 4</li>
+                </ul>
+                <button
+                    display="inline-block"
+                    style="width:130px"
+                    ng-click="fireGun()">
+                    Fire
+                </button>
+            </div>
+        </div>
+
+        <div ng-if="player.room === 'BOTTOM_LEFT'" ng-class="room">
+            <h2>Battery Room</h2>
+            <div>
+                <h3>Battery Gun</h3>
+                <ul>
+                    <li><b>Range</b> X, Y, Z</li>
+                    <li><b>Damage</b> 2</li>
+                </ul>
+                <button
+                    display="inline-block"
+                    style="width:130px"
+                    ng-click="fireGun()">
+                    Fire
+                </button>
+            </div>
+        </div>
+
+        <div ng-if="player.room === 'BOTTOM_CENTER'" ng-class="room">
+        <h2>Reactor Room</h2>
+            <div>
+                <h3>Short Range Wave</h3>
+                <ul>
+                    <li><b>Attacks ALL Vectors</b></li>
+                    <li><b>Range</b> Y, Z</li>
+                    <li><b>Damage</b> 1</li>
+                </ul>
+                <button
+                    display="inline-block"
+                    style="width:130px"
+                    ng-click="fireGun()">
+                    Fire
+                </button>
+            </div>
+
+        </div>
+
+        <div ng-if="player.room === 'BOTTOM_RIGHT'" ng-class="room">
+            <h2>Battery Room</h2>
+            <div>
+                <h3>Battery Gun</h3>
+                <ul>
+                    <li><b>Range</b> X, Y, Z</li>
+                    <li><b>Damage</b> 2</li>
+                </ul>
+                <button
+                    display="inline-block"
+                    style="width:130px"
+                    ng-click="fireGun()">
+                    Fire
+                </button>
+            </div>
+        </div>
+    </div>
 </div>

@@ -1,8 +1,9 @@
-const express  = require('express');
-const Game     = require('./game');
-const http     = require('http');
-const Player   = require('./player');
-const socketIo = require('socket.io');
+	const _        = require('lodash');
+	const express  = require('express');
+	const Game     = require('./game');
+	const http     = require('http');
+	const Player   = require('./player');
+	const socketIo = require('socket.io');
 
 const settings = {
 	PORT: 8000,
@@ -36,7 +37,8 @@ class Server {
 				self.game.log.write('Connected ' + socket.id);
 				socket.on('disconnect', self.socket_disconnect.bind(self, socket));
 				socket.on('join', self.socket_join.bind(self, socket));
-				socket.on('start', self.socket_start.bind(self, socket));
+				socket.on('start', self.bindPlayerAction(self.socket_start, socket));
+				socket.on('action', self.bindPlayerAction(self.socket_action, socket));
 			})
 		});
 	}
@@ -44,6 +46,16 @@ class Server {
 	stop() {
 		this.isRunning = false;
 		this.http.close();
+	}
+
+	bindPlayerAction(socketFn, socket) {
+		return (function(data) {
+			var player = this.game.getPlayer(socket.id);
+			if(player)
+				socketFn.call(this, socket, player, data);
+			else
+				socket.disconnect();
+		}).bind(this);
 	}
 
 	run() {
@@ -59,15 +71,25 @@ class Server {
 
 	socket_disconnect(socket) {
 		this.game.log.write('Disconnected ' + socket.id);
-		this.game.removePlayer(socket.id);
+
+		var player = this.game.getPlayer(socket.id);
+		if(player)
+			this.game.removePlayer(player);
 	}
 
 	socket_join(socket) {
 		this.game.addPlayer(new Player(socket));
 	}
 
-	socket_start(socket, data) {
+	socket_start(socket, player, data) {
 		this.game.start();
+	}
+
+	socket_action(socket, player, data) {
+		if(data.name === 'move')
+			this.game.movePlayer(player, data.room);
+		else
+			this.game.doAction(player, data);
 	}
 }
 

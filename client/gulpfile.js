@@ -50,7 +50,10 @@ gulp.task('html', ['clean'], function() {
 });
 
 gulp.task('scripts', ['clean'], function(cb) {
-    var errorOnce = function() {
+
+    function onError(err) {
+        logBrowserifyError(err);
+
         if(cb) {
             cb();
             cb = null;
@@ -58,7 +61,7 @@ gulp.task('scripts', ['clean'], function(cb) {
     }
 
     return bundler.bundle()
-        .on('error', function(err) {logBrowserifyError(err); errorOnce()})
+        .on('error', onError)
         .pipe(source(config.destEntryPoint))
         .pipe(gulp.dest(config.destFolder))
         .on('end', function() {browserSync.reload()});
@@ -120,6 +123,14 @@ gulp.task('clean', function(cb) {
 // });
 
 gulp.task('default', ['html', 'styles', 'scripts', 'fonts', 'images'], function() {
+    var backendHost = 'localhost';
+    var backendPort = '8000';
+
+    console.log('Proxying to', backendHost, ',', backendPort);
+
+    var proxyConfig = url.parse('http://' + backendHost + ':' + backendPort + '/api')
+    proxyConfig.route = '/'
+
     browserSync({
         port     : 3000,
         ui       : false,
@@ -127,7 +138,10 @@ gulp.task('default', ['html', 'styles', 'scripts', 'fonts', 'images'], function(
         notify   : false,
         ghostMode: false,
         logPrefix: 'BS',
-        server: {baseDir: 'dist'}
+        server: {
+            baseDir: 'dist',
+            middleware: [browserSyncProxy(proxyConfig)]
+        }
     });
 
     gulp.watch('app/**/*.html', ['html']);
