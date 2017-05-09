@@ -8,7 +8,7 @@ const Ship       = require('./ship');
 const Track      = require('./track');
 const VECTORS    = require('./constants').VECTORS;
 
-const TURN_LENGTH = 2000;
+const TURN_LENGTH = 4000;
 const STATE_DELAY = 100;
 
 class Game {
@@ -24,6 +24,7 @@ class Game {
 		this.playerActions = [];
 		this.sockets = sockets;
 		this.players = [];
+		this.startRoom = ROOMS.TOP_CENTER;
 		
 		this.tracks = {};
 		this.tracks[VECTORS.LEFT] = new Track(this, VECTORS.LEFT, 15, 12, 8, 0);
@@ -38,7 +39,8 @@ class Game {
 
 	start() {
 		for(var player of this.players)
-			player.move(this.ship.rooms[ROOMS.TOP_CENTER]);
+			player.move(this.ship.rooms[this.startRoom]);
+
 		this.goToState(GAME_STATE.PLAYING);
 	}
 
@@ -127,14 +129,14 @@ class Game {
 		// 	this.ship.rooms[ROOMS.BOTTOM_CENTER].fireGun();
 		// if(this.turn === 4)
 		// 	this.ship.rooms[ROOMS.BOTTOM_CENTER].fireGun();
-		if(this.turn === 7)
-			this.ship.rooms[ROOMS.TOP_LEFT].fireGun();
-		if(this.turn === 7)
-			this.ship.rooms[ROOMS.BOTTOM_CENTER].fireGun();
-		if(this.turn === 8)
-			this.ship.rooms[ROOMS.TOP_RIGHT].fireGun();
-		if(this.turn === 10)
-			this.ship.rooms[ROOMS.TOP_RIGHT].fireGun();
+		// if(this.turn === 7)
+		// 	this.ship.rooms[ROOMS.TOP_LEFT].fireGun();
+		// if(this.turn === 7)
+		// 	this.ship.rooms[ROOMS.BOTTOM_CENTER].fireGun();
+		// if(this.turn === 8)
+		// 	this.ship.rooms[ROOMS.TOP_RIGHT].fireGun();
+		// if(this.turn === 10)
+		// 	this.ship.rooms[ROOMS.TOP_RIGHT].fireGun();
 	}
 
 	resolveGuns() {
@@ -254,6 +256,7 @@ class Game {
 
 	sendFullState() {
 		this.sockets.emit('gamestate', {
+			turn   : this.turn,
 			state  : this.state,
 			ship   : this.ship.serialize(),
 			players: _.map(this.players, p => p.serialize()),

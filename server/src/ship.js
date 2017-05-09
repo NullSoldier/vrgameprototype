@@ -3,6 +3,7 @@ const ReactorRoom = require('./rooms').ReactorRoom;
 const WeaponRoom  = require('./rooms').WeaponRoom;
 const ROOMS       = require('./constants').ROOMS;
 const VECTORS     = require('./constants').VECTORS;
+const _           = require('lodash');
 
 class Ship {
 	constructor(game) {
@@ -33,7 +34,6 @@ class Ship {
 			buffer[originY + i][originX] = 'X';
 			buffer[originY + i][originX + width] = 'X';
 		}
-
 	}
 
 	renderFront(buffer, width) {
@@ -82,6 +82,7 @@ class Ship {
 	serialize() {
 		return {
 			health: this.health,
+			rooms: _.mapValues(this.rooms, (r) => r.serialize()),
 		}
 	}
 }

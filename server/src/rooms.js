@@ -1,85 +1,7 @@
 const ElectricGun    = require('./guns').ElectricGun;
 const EnergyGun      = require('./guns').EnergyGun;
+const ROOMS          = require('./constants').ROOMS;
 const ShortRangeWave = require('./guns').ShortRangeWave;
-
-// class RoomComponent {
-// 	constructor() {
-// 		this.action = null;
-// 	}
-
-// 	handle() {
-// 	}
-// }
-
-// class Gun extends RoomComponent {
-// 	constructor() {
-// 		this.action = 'gun';
-// 		this.fired = false;
-// 		this.damage = 0;
-// 		this.range = 0; // number of sectors
-// 	}
-
-// 	getTargets() {
-// 		throw new Error('Not Implemented');
-// 	}
-
-// 	getTargetRange(track) {
-// 		if(this.range === 1) return track.zPos;
-// 		if(this.range === 2) return track.yPos;
-// 		if(this.range === 3) return track.xPos;
-// 		throw new Error('invalid range on ship', this.range);
-// 	}
-
-// 	handle() {
-// 		this.fired = true;
-// 	}
-
-// 	reset() {
-// 		this.fired = false;
-// 	}
-// }
-
-// class EnergyGun extends Gun {
-// 	constructor(track) {
-// 		super();
-// 		this.track = track;
-// 		this.damage = 5;
-// 		this.range = 3;
-// 	}
-
-// 	getTargets() {
-// 		return _.filter([this.getTargetInTrack(this.track)]);
-// 	}
-// }
-
-// class ShortRangeWave extends Gun {
-// 	constructor(game) {
-// 		this.game = game;
-// 		this.damage = 1;
-// 		this.range = 2;
-// 	}
-
-// 	getTargets() {
-// 		return _.filter([
-// 			this.getTargetInTrack(this.game.tracks[VECTORS.LEFT]),
-// 			this.getTargetInTrack(this.game.tracks[VECTORS.CENTER]),
-// 			this.getTargetInTrack(this.game.tracks[VECTORS.RIGHT]),
-// 		]);
-// 	}
-// }
-
-// class ElectricGun extends Gun {
-// 	constructor(track) {
-// 		super();
-// 		this.track = track;
-// 		this.damage = 2;
-// 		this.range = 3;
-// 	}
-
-// 	getTargets() {
-// 		return _.filter([this.getTargetInTrack(this.track)]);
-// 	}
-// }
 
 class Room {
 	constructor(game, ship, room, track) {
@@ -90,6 +12,10 @@ class Room {
 
 	tryAction(player, action, data) {
 	}
+
+	serialize() {
+		return {};
+	}
 }
 
 class WeaponRoom extends Room {
@@ -98,9 +24,21 @@ class WeaponRoom extends Room {
 		this.gun = new EnergyGun(track);
 	}
 
+	getBatteryRoom() {
+		if(this.room === ROOMS.TOP_LEFT)
+			return this.ship.rooms[ROOMS.BOTTOM_LEFT];
+		if(this.room === ROOMS.TOP_RIGHT)
+			return this.ship.rooms[ROOMS.BOTTOM_RIGHT];
+		if(this.room === ROOMS.TOP_CENTER)
+			return this.ship.rooms[ROOMS.BOTTOM_CENTER];
+		throw new Error('Weapon room not attached to battery room');
+	}
+
 	fireGun() {
-		this.gun.fire();
-		this.ship.firedGuns.push(this.gun);
+		if(this.getBatteryRoom().consumePower(1)) {
+			this.gun.fire();
+			this.ship.firedGuns.push(this.gun);
+		}
 	}
 
 	tryAction(player, action) {
@@ -113,16 +51,46 @@ class ReactorRoom extends Room {
 	constructor(game, ship, room, track) {
 		super(game, ship, room, track);
 		this.gun = new ShortRangeWave(game);
+		this.cores = 3;
+		this.power = 4;
+		this.maxPower = 6;
 	}
 
 	fireGun() {
-		this.gun.fire();
-		this.ship.firedGuns.push(this.gun);
+		if(this.consumePower(1)) {
+			this.gun.fire();
+			this.ship.firedGuns.push(this.gun);
+		}
+	}
+
+	consumePower(powerNeeded) {
+		if(this.power < powerNeeded)
+			return false;
+
+		this.power -= powerNeeded;
+		return true;
+	}
+
+	replenishPower() {
+		if(this.cores <= 0)
+			return;
+		this.cores -= 1;
+		this.power = this.maxPower;
 	}
 
 	tryAction(player, action) {
 		if(action.name === 'gun')
 			this.fireGun();
+		if(action.name === 'replenish')
+			this.replenishPower();
+	}
+
+	serialize() {
+		return {
+			cores: this.cores,
+			power: this.power,
+			maxPower: this.maxPower,
+		}
 	}
 }
 
@@ -130,6 +98,8 @@ class BatteryRoom extends Room {
 	constructor(game, ship, room, track) {
 		super(game, ship, room, track);
 		this.gun = new ElectricGun(track);
+		this.power = 2;
+		this.maxPower = 3;
 	}
 
 	fireGun() {
@@ -137,9 +107,35 @@ class BatteryRoom extends Room {
 		this.ship.firedGuns.push(this.gun);
 	}
 
+	consumePower(powerNeeded) {
+		if(this.power < powerNeeded)
+			return false;
+
+		this.power -= powerNeeded;
+		return true;
+	}
+
+	getReactor() {
+		return this.ship.rooms[ROOMS.BOTTOM_CENTER];
+	}
+
+	replenishPower() {
+		if(this.getReactor().consumePower(this.maxPower))
+			this.power = this.maxPower;
+	}
+
 	tryAction(player, action) {
 		if(action.name === 'gun')
 			this.fireGun();
+		if(action.name === 'replenish')
+			this.replenishPower();
+	}
+
+	serialize() {
+		return {
+			power: this.power,
+			maxPower: this.maxPower,
+		}
 	}
 }
 

@@ -28,10 +28,11 @@
     <div ng-if="state === 'PLAYING'">
 
         <div ng-if="debug">
-            Player: {{player}}<br/>
-            Tracks: {{tracks}}<br/>
-            Threats: {{threats}}<br/>
-            Ship: {{ship}}<br/>
+            <b>Turn:</b> {{turn}}<br/>
+            <b>Player:</b> {{player}}<br/>
+            <b>Tracks:</b> {{tracks}}<br/>
+            <b>Threats:</b> {{threats}}<br/>
+            <b>Ship:</b> {{ship}}<br/>
         </div>
 
         <h2>Your Ship</h2>
@@ -134,10 +135,37 @@
                     Fire
                 </button>
             </div>
+
+            <div>
+                <h3>Red Fuel Tank</h3>
+                <div style="width: 50px; height: 190px; background-color: green; border: 1px solid black">
+                    <div style="width:100%; background-color: white" ng-style="{'height': getPowerPercent('BOTTOM_LEFT')}"></div>
+                </div>
+                <button
+                    display="inline-block"
+                    style="width:130px"
+                    ng-click="replenish()">
+                    Replenish from Reactor
+                </button>
+            </div>
         </div>
 
         <div ng-if="player.room === 'BOTTOM_CENTER'" ng-class="room">
         <h2>Reactor Room</h2>
+            <div>
+                <h3>Reactor</h3>
+                <div>{{ship.rooms.BOTTOM_CENTER.cores}} Cores Remaining</div>
+                <div style="width: 50px; height: 190px; background-color: green; border: 1px solid black">
+                    <div style="width:100%; background-color: white" ng-style="{'height': getPowerPercent('BOTTOM_CENTER')}"></div>
+                </div>
+                <button
+                    display="inline-block"
+                    style="width:130px"
+                    ng-click="replenish()">
+                    Consume Core
+                </button>
+            </div>
+
             <div>
                 <h3>Short Range Wave</h3>
                 <ul>
@@ -152,7 +180,6 @@
                     Fire
                 </button>
             </div>
-
         </div>
 
         <div ng-if="player.room === 'BOTTOM_RIGHT'" ng-class="room">
@@ -168,6 +195,19 @@
                     style="width:130px"
                     ng-click="fireGun()">
                     Fire
+                </button>
+            </div>
+
+            <div>
+                <h3>Blue Fuel Tank</h3>
+                <div style="width: 50px; height: 190px; background-color: green; border: 1px solid black">
+                    <div style="width:100%; background-color: white" ng-style="{'height': getPowerPercent('BOTTOM_RIGHT')}"></div>
+                </div>
+                <button
+                    display="inline-block"
+                    style="width:130px"
+                    ng-click="replenish()">
+                    Replenish from Reactor
                 </button>
             </div>
         </div>

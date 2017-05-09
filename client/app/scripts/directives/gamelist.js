@@ -22,6 +22,8 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
             $scope.enableScreenShake = false;
 
             function shakeScreen() {
+                if($scope.debug)
+                    return;
                 $scope.enableScreenShake = true;
                 $timeout(function() {$scope.enableScreenShake = false}, 200);
             }
@@ -54,6 +56,10 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
                 socket.emit('action', _.extend({name: name, room: $scope.player.room}, data));
             }
 
+            function replenish() {
+                doAction('replenish');
+            }
+
             function fireGun() {
                 doAction('gun');
             }
@@ -62,11 +68,17 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
                 return new Array(track.length);
             }
 
+            function getPowerPercent(room) {
+                const percent = $scope.ship.rooms[room].power / $scope.ship.rooms[room].maxPower;
+                return (1 - percent) * 100 + '%';
+            }
+
             function getThreatsAt(vector, distance) {
                 return _.filter($scope.threats, function(t) {return t.track === vector && t.distance === distance});
             }
 
             socketOnApply('gamestate', function(data) {
+                $scope.turn = data.turn;
                 $scope.state = data.state;
                 $scope.players = data.players;
                 $scope.rooms = data.rooms;
@@ -90,8 +102,8 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
                 $scope.player = data;
                 console.log('Joined', data);
 
-                // TODO: AUTO START GAME, REMOVE LATER
-                // $timeout(function() {$scope.startGame()});
+                if($scope.debug)
+                    $timeout(function() {$scope.startGame()});
             });
 
             socketOnApply('playerjoined', function(player) {
@@ -107,7 +119,9 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
             $scope.movePlayer = movePlayer;
             $scope.getThreatsAt = getThreatsAt;
             $scope.getCells = getCells;
+            $scope.getPowerPercent = getPowerPercent;
             $scope.fireGun = fireGun;
+            $scope.replenish = replenish;
 
             $scope.state = 'CONNECTED';
             socket.emit('join', {});
