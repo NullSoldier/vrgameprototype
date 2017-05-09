@@ -1,15 +1,21 @@
 const _          = require('lodash');
-const Destroyer  = require('./threats').Destroyer;
 const GAME_STATE = require('./constants').GAME_STATE;
 const GameTimer  = require('./gametimer');
 const Log        = require('./log');
 const ROOMS      = require('./constants').ROOMS;
 const Ship       = require('./ship');
+const threats    = require('./threats');
 const Track      = require('./track');
 const VECTORS    = require('./constants').VECTORS;
 
 const TURN_LENGTH = 4000;
 const STATE_DELAY = 100;
+
+const trackConfigs = [
+	[17, 13, 06, 02],
+	[10, 08, 05, 00],
+	[15, 11, 04, 01],
+]
 
 class Game {
 	constructor(sockets) {
@@ -17,7 +23,7 @@ class Game {
 		this.turnTimer = new GameTimer(TURN_LENGTH);
 		this.stateTimer = new GameTimer(STATE_DELAY);
 		this.threats = [];
-		this.state = null;;
+		this.state = null;
 		this.nextState = null;
 		this.lastId = 0;
 		this.log = new Log();
@@ -25,11 +31,15 @@ class Game {
 		this.sockets = sockets;
 		this.players = [];
 		this.startRoom = ROOMS.TOP_CENTER;
+
+		var l = _.sample(trackConfigs);
+		var c = _.sample(trackConfigs);
+		var r = _.sample(trackConfigs);
 		
 		this.tracks = {};
-		this.tracks[VECTORS.LEFT] = new Track(this, VECTORS.LEFT, 15, 12, 8, 0);
-		this.tracks[VECTORS.CENTER] = new Track(this, VECTORS.CENTER, 15, 12, 8, 0);
-		this.tracks[VECTORS.RIGHT] = new Track(this, VECTORS.RIGHT, 15, 12, 8, 0);
+		this.tracks[VECTORS.LEFT] = new Track(this, VECTORS.LEFT, l[0], l[1], l[2], l[3]);
+		this.tracks[VECTORS.CENTER] = new Track(this, VECTORS.CENTER, c[0], c[1], c[2], c[3]);
+		this.tracks[VECTORS.RIGHT] = new Track(this, VECTORS.RIGHT, r[0], r[1], r[2], r[3]);
 
 		// dependency on tracks
 		this.ship = new Ship(this);
@@ -91,6 +101,7 @@ class Game {
 
 	FAIL_enter() {
 		this.log.write('Players lose the game');
+		this.sendFullState();
 	}
 
 	nextTurn() {
@@ -118,8 +129,12 @@ class Game {
 			this.spawnThreat(VECTORS.LEFT);
 		if(this.turn === 3)
 			this.spawnThreat(VECTORS.RIGHT);
+		// if(this.turn === 4)
+		// 	this.spawnThreat(VECTORS.LEFT);
 		if(this.turn === 5)
 			this.spawnThreat(VECTORS.CENTER);
+		if(this.turn === 7)
+			this.spawnThreat(VECTORS.RIGHT);
 
 		this.sendFullState();
 	}
@@ -158,9 +173,14 @@ class Game {
 		for(var threatId in totals) {
 			var threat = totals[threatId].threat;
 			var amount = totals[threatId].value;
-			amount -= threat.shields;
-			threat.health -= amount;
-			this.log.write(`${amount} damage done to ${threat.name}`)
+
+			if(!threat.ignoreDamage) {
+				amount -= threat.shields;
+				threat.health -= amount;
+				this.log.write(`${amount} damage done to ${threat.name}`)
+			}
+
+			threat.onHit(amount);
 
 			if(threat.health <= 0)
 				this.killThreat(threat);
@@ -185,8 +205,10 @@ class Game {
 	}
 
 	spawnThreat(vector) {
-		this.log.write('Threat incoming at ' + vector);
-		this.threats.push(new Destroyer(this, this.tracks[vector]));
+		var threatClass = threats[_.sample(_.keys(threats))];
+		var threat = new threatClass(this, this.tracks[vector]);
+		this.log.write(`Threat ${threat.name} incoming at ` + vector);
+		this.threats.push(threat);
 	}
 
 	render(clear) {

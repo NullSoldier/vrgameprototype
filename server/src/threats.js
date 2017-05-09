@@ -1,3 +1,5 @@
+const VECTORS = require('./constants').VECTORS;
+
 class Threat {
 	constructor(game, track) {
 		this.id = game.generateId();
@@ -10,6 +12,8 @@ class Threat {
 		this.track = track;
 		this.distance = track.length - 1;
 		this.triggers = [track.xPos, track.yPos, track.zPos];
+		this.ignoreDamage = false;
+		this.isVisible = true;
 	}
 
 	attackCurrentZone(game, damage) {
@@ -34,6 +38,9 @@ class Threat {
 
 	attackZ(game) {
 		throw new Error('attackZ not implemented')
+	}
+
+	onHit() {
 	}
 
 	render() {
@@ -61,14 +68,16 @@ class Threat {
 
 	serialize() {
 		return {
-			id      : this.id,
-			name    : this.name,
-			health  : this.health,
-			speed   : this.speed,
-			shields : this.shields,
-			track   : this.track.vector,
-			triggers: this.triggers,
-			distance: this.distance,
+			id          : this.id,
+			name        : this.name,
+			health      : this.health,
+			speed       : this.speed,
+			shields     : this.shields,
+			track       : this.track.vector,
+			triggers    : this.triggers,
+			distance    : this.distance,
+			isVisible   : this.isVisible,
+			ignoreDamage: this.ignoreDamage
 		};
 	}
 }
@@ -79,20 +88,12 @@ class Destroyer extends Threat {
 		this.name = 'Destroyer#' + this.id;
 		this.speed = 2;
 		this.health = 5;
-		this.shields = 1;
+		this.shields = 2;
 	}
 
-	attackX(game) {
-		this.attackCurrentZone(this.game, 1);
-	}
-
-	attackY(game) {
-		this.attackCurrentZone(this.game, 2);
-	}
-
-	attackZ(game) {
-		this.attackCurrentZone(this.game, 2);
-	}
+	attackX(game) {this.attackCurrentZone(this.game, 1)}
+	attackY(game) {this.attackCurrentZone(this.game, 2)}
+	attackZ(game) {this.attackCurrentZone(this.game, 2)}
 
 	renderAttacks() {
 		return [
@@ -103,6 +104,112 @@ class Destroyer extends Threat {
 	}
 }
 
+class PulseBall extends Threat {
+	constructor(game, track) {
+		super(game, track);
+		this.name = 'Pulse Ball #' + this.id;
+		this.speed = 2;
+		this.health = 5;
+		this.shields = 1;
+	}
+
+	attackX(game) {this.attackAllZones(this.game, 1)}
+	attackY(game) {this.attackAllZones(this.game, 1)}
+	attackZ(game) {this.attackAllZones(this.game, 2)}
+}
+
+class Fighter extends Threat {
+	constructor(game, track) {
+		super(game, track);
+		this.name = 'Fighter #' + this.id;
+		this.speed = 3;
+		this.health = 4;
+		this.shields = 2;
+	}
+
+	attackX(game) {this.attackCurrentZone(this.game, 1)}
+	attackY(game) {this.attackCurrentZone(this.game, 2)}
+	attackZ(game) {this.attackCurrentZone(this.game, 3)}
+}
+
+class Amobea extends Threat {
+	constructor(game, track) {
+		super(game, track);
+		this.name = 'Amobea #' + this.id;
+		this.speed = 2;
+		this.health = 8;
+		this.shields = 0;
+	}
+
+	heal(amount, max) {
+		this.health = Math.min(this.health + amount, max);
+	}
+
+	attackX(game) {this.heal(2, 8) }
+	attackY(game) {this.heal(2, 8) }
+	attackZ(game) {this.attackCurrentZone(this.game, 5)}
+}
+
+class CryoshieldFighter extends Threat {
+	constructor(game, track) {
+		super(game, track);
+		this.name = 'Cryoshield Fighter #' + this.id;
+		this.speed = 3;
+		this.health = 4;
+		this.shields = 1;
+		this.ignoreDamage = true;
+	}
+
+	onHit() {
+		this.ignoreDamage = false;
+	}
+
+	attackX(game) {this.attackCurrentZone(this.game, 1)}
+	attackY(game) {this.attackCurrentZone(this.game, 2)}
+	attackZ(game) {this.attackCurrentZone(this.game, 2)}
+}
+
+
+class StealthFighter extends Threat {
+	constructor(game, track) {
+		super(game, track);
+		this.name = 'Stealth Fighter #' + this.id;
+		this.speed = 4;
+		this.health = 4;
+		this.shields = 2;
+		this.ignoreDamage = true;
+		this.isVisible = false;
+	}
+
+	attackX(game) {
+		this.isVisible = true;
+		this.ignoreDamage = false;
+	}
+
+	attackY(game) {this.attackCurrentZone(this.game, 2)}
+	attackZ(game) {this.attackCurrentZone(this.game, 2)}
+}
+
+class Meteoroid extends Threat {
+	constructor(game, track) {
+		super(game, track);
+		this.name = 'Meteoroid #' + this.id;
+		this.speed = 5;
+		this.health = 5;
+		this.shields = 0;
+	}
+
+	attackX(game) {}
+	attackY(game) {}
+	attackZ(game) {this.attackCurrentZone(this.game, 20)}
+}
+
 module.exports = {
-	Destroyer: Destroyer,
+	Destroyer        : Destroyer,
+	CryoshieldFighter: CryoshieldFighter,
+	StealthFighter   : StealthFighter,
+	Amobea           : Amobea,
+	Fighter          : Fighter,
+	PulseBall        : PulseBall,
+	Meteoroid        : Meteoroid,
 };

@@ -1,3 +1,12 @@
+<div ng-if="debug">
+    <b>State:</b> {{state}}<br/>
+    <b>Turn:</b> {{turn}}<br/>
+    <b>Player:</b> {{player}}<br/>
+    <b>Tracks:</b> {{tracks}}<br/>
+    <b>Threats:</b> {{threats}}<br/>
+    <b>Ship:</b> {{ship}}<br/>
+</div>
+
 <div class="play-container" ng-class="{'enable-screen-shake': enableScreenShake}">
     <div ng-if="state === 'NOT_CONNECTED'">
         Connecting...
@@ -8,15 +17,15 @@
     </div>
 
     <div ng-if="state === 'WAITING'">
-        <div>
-            Waiting for players...<br>
+        <div style="margin-bottom:15px;font-size:32px;">
             <button ng-click="startGame()">Start Game</button>
         </div>
 
-        <div>
+        <div style="font-size:32px;">
             Players
             <ul>
                 <li ng-repeat="p in players track by p.id">{{p.id}} <span ng-if="p.id === player.id">(ME)</span></li>
+                <li>Waiting for players...</li>
             </ul>
         </div>
     </div>
@@ -25,14 +34,9 @@
         Server rejected client: {{reason}}
     </div>
 
-    <div ng-if="state === 'PLAYING'">
-
-        <div ng-if="debug">
-            <b>Turn:</b> {{turn}}<br/>
-            <b>Player:</b> {{player}}<br/>
-            <b>Tracks:</b> {{tracks}}<br/>
-            <b>Threats:</b> {{threats}}<br/>
-            <b>Ship:</b> {{ship}}<br/>
+    <div ng-if="state === 'PLAYING' || state === 'FAIL'">
+        <div ng-if="state === 'FAIL'">
+            <h1>YOUR SHIP BLEW UP YOU LOSE</h1>
         </div>
 
         <h2>Your Ship</h2>
@@ -70,14 +74,15 @@
                 <div class="tracks-container">
                     <table>
                         <tr>
-                            <td ng-repeat="track in tracks track by track.vector">
+                            <td valign="bottom" ng-repeat="track in tracks track by track.vector">
                                 <table class="track">
                                     <tr><td>{{track.vector}}, {{ship.health[track.vector]}} HP</td></tr>
                                     <tr ng-repeat="cell in getCells(track) track by $index">
                                         <td ng-class="{
                                             trackz: (track.length-1) - $index <= track.zPos,
                                             tracky: (track.length-1) - $index <= track.yPos && (track.length-1) - $index > track.zPos,
-                                            trackx: (track.length-1) - $index <= track.xPos && (track.length-1) - $index > track.yPos}">
+                                            trackx: (track.length-1) - $index <= track.xPos && (track.length-1) - $index > track.yPos,
+                                            notrack: (track.length-1) - $index > track.xPos}">
                                             &nbsp;<span ng-repeat="threat in getThreatsAt(track.vector, (track.length - 1) - $index) track by threat.id">{{threat.name}}</span>
                                         </td>
                                     </tr>

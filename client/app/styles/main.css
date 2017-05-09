@@ -54,8 +54,12 @@ body {
 .tracks-container table.track td {
     text-align: center;
     border: 1px solid black;
-    width: 115px;
+    width: 175px;
     height: 20px;
+}
+
+.tracks-container table.track td.notrack {
+    background-color: green;
 }
 
 .tracks-container table.track td.trackx {

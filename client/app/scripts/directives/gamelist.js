@@ -15,10 +15,10 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
             var self = this;
             var socket = null;
 
+            $scope.debug = false;
             $scope.room = 'TOP_LEFT';
             $scope.player = null;
             $scope.state = 'NOT_CONNECTED';
-            $scope.debug = false;
             $scope.enableScreenShake = false;
 
             function shakeScreen() {
@@ -74,7 +74,9 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
             }
 
             function getThreatsAt(vector, distance) {
-                return _.filter($scope.threats, function(t) {return t.track === vector && t.distance === distance});
+                return _.filter($scope.threats, function(t) {
+                    return t.track === vector && t.distance === distance && t.isVisible;
+                });
             }
 
             socketOnApply('gamestate', function(data) {
