@@ -1,11 +1,4 @@
-<div ng-if="debug">
-    <b>State:</b> {{state}}<br/>
-    <b>Turn:</b> {{turn}}<br/>
-    <b>Player:</b> {{player}}<br/>
-    <b>Tracks:</b> {{tracks}}<br/>
-    <b>Threats:</b> {{threats}}<br/>
-    <b>Ship:</b> {{ship}}<br/>
-</div>
+<div style="border-radius:50%; background-color: rgb(55, 53, 53); width: 50px; height: 50px; position: relative; z-index: -1"></div>
 
 <div class="play-container" ng-class="{'enable-screen-shake': enableScreenShake}">
     <div ng-if="state === 'NOT_CONNECTED'">
@@ -35,6 +28,11 @@
     </div>
 
     <div ng-if="state === 'PLAYING' || state === 'FAIL'">
+
+        <div>
+            <b>Tick</b> {{turn}}
+        </div>
+
         <div ng-if="state === 'FAIL'">
             <h1>YOUR SHIP BLEW UP YOU LOSE</h1>
         </div>
@@ -79,11 +77,16 @@
                                     <tr><td>{{track.vector}}, {{ship.health[track.vector]}} HP</td></tr>
                                     <tr ng-repeat="cell in getCells(track) track by $index">
                                         <td ng-class="{
-                                            trackz: (track.length-1) - $index <= track.zPos,
-                                            tracky: (track.length-1) - $index <= track.yPos && (track.length-1) - $index > track.zPos,
-                                            trackx: (track.length-1) - $index <= track.xPos && (track.length-1) - $index > track.yPos,
-                                            notrack: (track.length-1) - $index > track.xPos}">
-                                            &nbsp;<span ng-repeat="threat in getThreatsAt(track.vector, (track.length - 1) - $index) track by threat.id">{{threat.name}}</span>
+                                            trackz: (track.length) - $index <= track.zPos,
+                                            tracky: (track.length) - $index <= track.yPos && (track.length-1) - $index >= track.zPos,
+                                            trackx: (track.length) - $index <= track.xPos && (track.length-1) - $index >= track.yPos,
+                                            notrack: (track.length) - $index > track.xPos}">
+                                            &nbsp;<span
+                                                style="position: relative"
+                                                ng-style="{'top': getThreatOffsetY(threat)}"
+                                                ng-repeat="threat in getThreatsAt(track.vector, (track.length - 1) - $index) track by threat.id">
+                                                {{threat.name}}
+                                            </span>
                                         </td>
                                     </tr>
                                 </table>
@@ -217,4 +220,13 @@
             </div>
         </div>
     </div>
+</div>
+
+<div ng-if="debug">
+    <b>State:</b> {{state}}<br/>
+    <b>Turn:</b> {{turn}}<br/>
+    <b>Player:</b> {{player}}<br/>
+    <b>Tracks:</b> {{tracks}}<br/>
+    <b>Threats:</b> {{threats}}<br/>
+    <b>Ship:</b> {{ship}}<br/>
 </div>

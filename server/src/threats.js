@@ -18,14 +18,14 @@ class Threat {
 
 	attackCurrentZone(game, damage) {
 		game.ship.health[this.track.vector] -= damage;
-		game.onShipHit();
+		game.onShipHit(this, damage);
 	}
 
 	attackAllZones(game, damage) {
 		game.ship.health[VECTORS.LEFT] -= damage;
 		game.ship.health[VECTORS.CENTER] -= damage;
 		game.ship.health[VECTORS.RIGHT] -= damage;
-		game.onShipHit();
+		game.onShipHit(this, damage);
 	}
 
 	attackX(game) {

@@ -48,30 +48,29 @@ body {
 }
 
 .tracks-container table.track tr {
-    border: 1px solid black;
+    border-top: 1px dashed rgb(20, 20, 20);
 }
 
 .tracks-container table.track td {
     text-align: center;
-    border: 1px solid black;
     width: 175px;
     height: 20px;
 }
 
 .tracks-container table.track td.notrack {
-    background-color: green;
+    background-color: #A3FEBA;
 }
 
 .tracks-container table.track td.trackx {
-    background-color: yellow;
+    background-color: #FFFF99;
 }
 
 .tracks-container table.track td.tracky {
-    background-color: orange;
+    background-color: #FFB347;
 }
 
 .tracks-container table.track td.trackz {
-    background-color: red;
+    background-color: #FF7575;
 }
 
 .play-container.enable-screen-shake {

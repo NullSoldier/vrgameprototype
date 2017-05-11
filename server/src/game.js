@@ -10,11 +10,12 @@ const VECTORS    = require('./constants').VECTORS;
 
 const TURN_LENGTH = 4000;
 const STATE_DELAY = 100;
+const WAIT_TO_END_DELAY = 5000;
 
 const trackConfigs = [
-	[17, 13, 06, 02],
-	[10, 08, 05, 00],
-	[15, 11, 04, 01],
+	[17, 13, 06, 03],
+	[10, 08, 05, 01],
+	[15, 11, 04, 02],
 ]
 
 class Game {
@@ -22,35 +23,18 @@ class Game {
 		this.turn = 0;
 		this.turnTimer = new GameTimer(TURN_LENGTH);
 		this.stateTimer = new GameTimer(STATE_DELAY);
-		this.threats = [];
+		this.failTimer = new GameTimer(WAIT_TO_END_DELAY);
 		this.state = null;
 		this.nextState = null;
-		this.lastId = 0;
-		this.log = new Log();
-		this.playerActions = [];
 		this.sockets = sockets;
 		this.players = [];
+		this.log = new Log();
 		this.startRoom = ROOMS.TOP_CENTER;
-
-		var l = _.sample(trackConfigs);
-		var c = _.sample(trackConfigs);
-		var r = _.sample(trackConfigs);
-		
-		this.tracks = {};
-		this.tracks[VECTORS.LEFT] = new Track(this, VECTORS.LEFT, l[0], l[1], l[2], l[3]);
-		this.tracks[VECTORS.CENTER] = new Track(this, VECTORS.CENTER, c[0], c[1], c[2], c[3]);
-		this.tracks[VECTORS.RIGHT] = new Track(this, VECTORS.RIGHT, r[0], r[1], r[2], r[3]);
-
-		// dependency on tracks
-		this.ship = new Ship(this);
 
 		this.goToState(GAME_STATE.WAITING);
 	}
 
 	start() {
-		for(var player of this.players)
-			player.move(this.ship.rooms[this.startRoom]);
-
 		this.goToState(GAME_STATE.PLAYING);
 	}
 
@@ -76,17 +60,40 @@ class Game {
 
 	WAITING_enter() {
 		this.log.write('Waiting to start...');
+		this.sendFullState();
 	}
 
 	WAITING_update(deltaMs) {
-		// this.render(true);
+	}
+
+	PLAYING_enter() {
+		this.log.write('Starting the game...');
+
+		this.lastId = 0;
+		this.threats = [];
+		this.playerActions = [];
+
+		var l = _.sample(trackConfigs);
+		var c = _.sample(trackConfigs);
+		var r = _.sample(trackConfigs);
+		
+		this.tracks = {};
+		this.tracks[VECTORS.LEFT] = new Track(this, VECTORS.LEFT, l[0], l[1], l[2], l[3]);
+		this.tracks[VECTORS.CENTER] = new Track(this, VECTORS.CENTER, c[0], c[1], c[2], c[3]);
+		this.tracks[VECTORS.RIGHT] = new Track(this, VECTORS.RIGHT, r[0], r[1], r[2], r[3]);
+
+		// dependency on tracks
+		this.ship = new Ship(this);
+
+		for(var player of this.players)
+			player.move(this.ship.rooms[this.startRoom]);
 	}
 
 	PLAYING_update(deltaMs) {
 		if(this.turnTimer.update(deltaMs)) {
 			this.turnTimer.reset();
 			this.nextTurn();
-			// this.render(true);
+			this.sendFullState();
 		}
 
 		if(this.stateTimer.update(deltaMs)) {
@@ -95,13 +102,16 @@ class Game {
 		}
 	}
 
-	PLAYING_enter() {
-		this.log.write('Starting the game...');
-	}
-
 	FAIL_enter() {
 		this.log.write('Players lose the game');
 		this.sendFullState();
+	}
+
+	FAIL_update(deltaMs) {
+		if(this.failTimer.update(deltaMs)) {
+			this.failTimer.reset();
+			this.goToState(GAME_STATE.WAITING);
+		}
 	}
 
 	nextTurn() {
@@ -125,18 +135,16 @@ class Game {
 
 		_.filter(this.threats, t => t.distance <= 0).forEach(t => this.surviveThreat(t));
 
-		if(this.turn === 1)
-			this.spawnThreat(VECTORS.LEFT);
-		if(this.turn === 3)
-			this.spawnThreat(VECTORS.RIGHT);
+		// if(this.turn === 1)
+		// 	this.spawnThreat(VECTORS.LEFT);;
+		// if(this.turn === 3)
+		// 	this.spawnThreat(VECTORS.RIGHT);;
 		// if(this.turn === 4)
+		// 	this.spawnThreat(VECTORS.CENTER);
+		// if(this.turn === 7)
+		// 	this.spawnThreat(VECTORS.CENTER);;
+		// if(this.turn === 7)
 		// 	this.spawnThreat(VECTORS.LEFT);
-		if(this.turn === 5)
-			this.spawnThreat(VECTORS.CENTER);
-		if(this.turn === 7)
-			this.spawnThreat(VECTORS.RIGHT);
-
-		this.sendFullState();
 	}
 
 	simulatePlayerActions() {
@@ -241,7 +249,8 @@ class Game {
 		player.room = room;
 	}
 
-	onShipHit() {
+	onShipHit(threat, damage) {
+		this.log.write(`Ship hit for ${damage} by ${threat.name}`)
 		this.sockets.emit('shiphit', {});
 	}
 
@@ -274,18 +283,30 @@ class Game {
 		this.log.write(`Player ${player.id} left`);
 		this.sockets.emit('playerleft', player.serialize());
 		this.sendFullState();
+
+		if(this.state !== GAME_STATE.WAITING && this.players.length === 0)
+			this.goToState(GAME_STATE.WAITING);
 	}
 
 	sendFullState() {
-		this.sockets.emit('gamestate', {
-			turn   : this.turn,
-			state  : this.state,
-			ship   : this.ship.serialize(),
-			players: _.map(this.players, p => p.serialize()),
-			rooms  : _.map(this.rooms, r => r.serialize()),
-			threats: _.map(this.threats, t => t.serialize()),
-			tracks : _.map(_.values(this.tracks), t => t.serialize()),
-		});
+		if(this.state === GAME_STATE.PLAYING || this.state === GAME_STATE.FAIL)
+			this.sockets.emit('gamestate', {
+				turnLength: TURN_LENGTH,
+				turn      : this.turn,
+				state     : this.state,
+				ship      : this.ship.serialize(),
+				players   : _.map(this.players, p => p.serialize()),
+				rooms     : _.map(this.rooms, r => r.serialize()),
+				threats   : _.map(this.threats, t => t.serialize()),
+				tracks    : _.map(_.values(this.tracks), t => t.serialize()),
+			});
+		else if (this.state === 'WAITING')
+			this.sockets.emit('gamestate', {
+				state  : this.state,
+				players: _.map(this.players, p => p.serialize())
+			});
+		else
+			throw new Error('No serializer for state: ' + this.state);
 	}
 }
 

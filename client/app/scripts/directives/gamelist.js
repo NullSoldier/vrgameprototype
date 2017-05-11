@@ -15,11 +15,18 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
             var self = this;
             var socket = null;
 
-            $scope.debug = false;
+            $scope.debug = true;
             $scope.room = 'TOP_LEFT';
             $scope.player = null;
             $scope.state = 'NOT_CONNECTED';
             $scope.enableScreenShake = false;
+            $scope.lastTurnAt = null;
+
+            function getThreatOffsetY(threat) {
+                var delta = (Date.now() - $scope.lastTurnAt) / $scope.turnLength;
+                var offset = (threat.speed * 20) * Math.min(delta, 1.0);
+                return offset + 'px';
+            }
 
             function shakeScreen() {
                 if($scope.debug)
@@ -32,14 +39,14 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
                 var socketUrl = '';
                 if(location.port)
                     socketUrl += ':' + location.port;
-                return io.connect(socketUrl, {transports: ['websocket']});
+                return io.connect(socketUrl, {transports: ['websocket'], reconnection: true});
             }
 
             socket = connectToServer();
 
             function socketOnApply(event, fn) {
                 socket.on(event, function(data) {
-                    $timeout(function() { fn(data) });
+                    $timeout(fn.bind(this, data));
                 });
             }
 
@@ -80,6 +87,10 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
             }
 
             socketOnApply('gamestate', function(data) {
+                if($scope.turn != data.turn)
+                    $scope.lastTurnAt = Date.now();
+
+                $scope.turnLength = data.turnLength;
                 $scope.turn = data.turn;
                 $scope.state = data.state;
                 $scope.players = data.players;
@@ -113,20 +124,29 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
                     console.log('Player joined: ', player.id);
             });
 
-            socket.on('playerleft', function(player) {
+            socketOnApply('playerleft', function(player) {
                 console.log('Player left: ', player.id);
+            });
+
+            socketOnApply('disconnect', function() {
+                $scope.state = 'NOT_CONNECTED';
+            });
+
+            socketOnApply('connect', function() {
+                $scope.state = 'CONNECTED';
+                socket.emit('join', {});
             });
 
             $scope.startGame = startGame;
             $scope.movePlayer = movePlayer;
             $scope.getThreatsAt = getThreatsAt;
             $scope.getCells = getCells;
+            $scope.getThreatOffsetY = getThreatOffsetY;
             $scope.getPowerPercent = getPowerPercent;
             $scope.fireGun = fireGun;
             $scope.replenish = replenish;
 
-            $scope.state = 'CONNECTED';
-            socket.emit('join', {});
+
         }
     }
 }]);
