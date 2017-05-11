@@ -1,13 +1,7 @@
-<div style="border-radius:50%; background-color: rgb(55, 53, 53); width: 50px; height: 50px; position: relative; z-index: -1"></div>
-
 <div class="play-container" ng-class="{'enable-screen-shake': enableScreenShake}">
-    <div ng-if="state === 'NOT_CONNECTED'">
-        Connecting...
-    </div>
-
-    <div ng-if="state === 'CONNECTED'">
-        Joining
-    </div>
+    <div ng-if="state === 'NOT_CONNECTED'">Connecting...</div>
+    <div ng-if="state === 'CONNECTED'">Joining</div>
+    <div ng-if="state === 'REJECTED'">Server rejected client: {{reason}}</div>
 
     <div ng-if="state === 'WAITING'">
         <div style="margin-bottom:15px;font-size:32px;">
@@ -23,18 +17,13 @@
         </div>
     </div>
 
-    <div ng-if="state === 'REJECTED'">
-        Server rejected client: {{reason}}
-    </div>
-
     <div ng-if="state === 'PLAYING' || state === 'FAIL'">
+        <div ng-if="state === 'FAIL'">
+            <h1>YOUR SHIP BLEW UP YOU LOSE</h1>
+        </div>
 
         <div>
             <b>Tick</b> {{turn}}
-        </div>
-
-        <div ng-if="state === 'FAIL'">
-            <h1>YOUR SHIP BLEW UP YOU LOSE</h1>
         </div>
 
         <h2>Your Ship</h2>
@@ -58,8 +47,9 @@
                 <button
                     display="inline-block"
                     style="width:130px"
-                    ng-click="fireGun()">
-                    Fire
+                    ng-click="fireGun()"
+                    ng-disabled="ship.rooms.TOP_LEFT.gun.fired">
+                    {{ ship.rooms.TOP_LEFT.gun.fired ? 'Firing' : 'Fire' }}
                 </button>
             </div>
         </div>
@@ -105,14 +95,15 @@
                 <button
                     display="inline-block"
                     style="width:130px"
-                    ng-click="fireGun()">
-                    Fire
+                    ng-click="fireGun()"
+                    ng-disabled="ship.rooms.TOP_CENTER.gun.fired">
+                    {{ ship.rooms.TOP_CENTER.gun.fired ? 'Firing' : 'Fire' }}
                 </button>
             </div>
         </div>
 
         <div ng-if="player.room === 'TOP_RIGHT'" ng-class="room">
-            <h2>Upper Left</h2>
+            <h2>Upper Right</h2>
             <div>
                 <h3>Energy Gun</h3>
                 <ul>
@@ -122,8 +113,9 @@
                 <button
                     display="inline-block"
                     style="width:130px"
-                    ng-click="fireGun()">
-                    Fire
+                    ng-click="fireGun()"
+                    ng-disabled="ship.rooms.TOP_RIGHT.gun.fired">
+                    {{ ship.rooms.TOP_RIGHT.gun.fired ? 'Firing' : 'Fire' }}
                 </button>
             </div>
         </div>
@@ -139,8 +131,9 @@
                 <button
                     display="inline-block"
                     style="width:130px"
-                    ng-click="fireGun()">
-                    Fire
+                    ng-click="fireGun()"
+                    ng-disabled="ship.rooms.BOTTOM_LEFT.gun.fired">
+                    {{ ship.rooms.BOTTOM_LEFT.gun.fired ? 'Firing' : 'Fire' }}
                 </button>
             </div>
 
@@ -159,7 +152,7 @@
         </div>
 
         <div ng-if="player.room === 'BOTTOM_CENTER'" ng-class="room">
-        <h2>Reactor Room</h2>
+            <h2>Reactor Room</h2>
             <div>
                 <h3>Reactor</h3>
                 <div>{{ship.rooms.BOTTOM_CENTER.cores}} Cores Remaining</div>
@@ -184,8 +177,9 @@
                 <button
                     display="inline-block"
                     style="width:130px"
-                    ng-click="fireGun()">
-                    Fire
+                    ng-click="fireGun()"
+                    ng-disabled="ship.rooms.BOTTOM_CENTER.gun.fired">
+                    {{ ship.rooms.BOTTOM_CENTER.gun.fired ? 'Firing' : 'Fire' }}
                 </button>
             </div>
         </div>
@@ -201,8 +195,9 @@
                 <button
                     display="inline-block"
                     style="width:130px"
-                    ng-click="fireGun()">
-                    Fire
+                    ng-click="fireGun()"
+                    ng-disabled="ship.rooms.BOTTOM_RIGHT.gun.fired">
+                    {{ ship.rooms.BOTTOM_RIGHT.gun.fired ? 'Firing' : 'Fire' }}
                 </button>
             </div>
 

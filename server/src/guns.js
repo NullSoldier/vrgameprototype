@@ -39,6 +39,14 @@ class Gun {
 	reset() {
 		this.fired = false;
 	}
+
+	serialize() {
+		return {
+			fired: this.fired,
+			damage: this.damage,
+			range: this.range,
+		}
+	}
 }
 
 class EnergyGun extends Gun {

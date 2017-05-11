@@ -94,7 +94,7 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
                 $scope.turn = data.turn;
                 $scope.state = data.state;
                 $scope.players = data.players;
-                $scope.rooms = data.rooms;
+                $scope.rooms = data.ship ? data.ship.rooms : null;
                 $scope.tracks = data.tracks;
                 $scope.threats = data.threats;
                 $scope.ship = data.ship;
@@ -145,8 +145,6 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
             $scope.getPowerPercent = getPowerPercent;
             $scope.fireGun = fireGun;
             $scope.replenish = replenish;
-
-
         }
     }
 }]);

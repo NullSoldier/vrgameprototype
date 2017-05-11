@@ -48,7 +48,7 @@ body {
 }
 
 .tracks-container table.track tr {
-    border-top: 1px dashed rgb(20, 20, 20);
+    border-top: 1px dashed rgba(20, 20, 20, 0.1);
 }
 
 .tracks-container table.track td {

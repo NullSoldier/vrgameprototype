@@ -88,8 +88,10 @@ class Server {
 	socket_action(socket, player, data) {
 		if(data.name === 'move')
 			this.game.movePlayer(player, data.room);
-		else
+		else if(data.name === 'gun')
 			this.game.doAction(player, data);
+		else
+			this.game.queueAction(player, data);
 	}
 }
 

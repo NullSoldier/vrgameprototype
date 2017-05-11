@@ -36,14 +36,22 @@ class WeaponRoom extends Room {
 
 	fireGun() {
 		if(this.getBatteryRoom().consumePower(1)) {
+			console.log('firing');
 			this.gun.fire();
 			this.ship.firedGuns.push(this.gun);
 		}
 	}
 
 	tryAction(player, action) {
+		console.log('foo', action.name)
 		if(action.name === 'gun')
 			this.fireGun();
+	}
+
+	serialize() {
+		return {
+			gun: this.gun.serialize(),
+		}
 	}
 }
 
@@ -90,6 +98,7 @@ class ReactorRoom extends Room {
 			cores: this.cores,
 			power: this.power,
 			maxPower: this.maxPower,
+			gun: this.gun.serialize(),
 		}
 	}
 }
@@ -135,6 +144,7 @@ class BatteryRoom extends Room {
 		return {
 			power: this.power,
 			maxPower: this.maxPower,
+			gun: this.gun.serialize(),
 		}
 	}
 }

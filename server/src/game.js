@@ -20,7 +20,6 @@ const trackConfigs = [
 
 class Game {
 	constructor(sockets) {
-		this.turn = 0;
 		this.turnTimer = new GameTimer(TURN_LENGTH);
 		this.stateTimer = new GameTimer(STATE_DELAY);
 		this.failTimer = new GameTimer(WAIT_TO_END_DELAY);
@@ -69,6 +68,7 @@ class Game {
 	PLAYING_enter() {
 		this.log.write('Starting the game...');
 
+		this.turn = 0;
 		this.lastId = 0;
 		this.threats = [];
 		this.playerActions = [];
@@ -256,7 +256,11 @@ class Game {
 
 	doAction(player, action) {
 		this.log.write(`Player ${player.id} doing ${action.name} in ${action.room}`)
-		this.playerActions.push(() => this.ship.rooms[action.room].tryAction(player, action));
+		this.ship.rooms[action.room].tryAction(player, action);
+	}
+
+	queueAction(player, action) {
+		this.playerActions.push(doAction.bind(this, player, action));
 	}
 
 	getPlayer(playerId) {
@@ -296,7 +300,6 @@ class Game {
 				state     : this.state,
 				ship      : this.ship.serialize(),
 				players   : _.map(this.players, p => p.serialize()),
-				rooms     : _.map(this.rooms, r => r.serialize()),
 				threats   : _.map(this.threats, t => t.serialize()),
 				tracks    : _.map(_.values(this.tracks), t => t.serialize()),
 			});
