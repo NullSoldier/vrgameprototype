@@ -151,7 +151,5 @@ gulp.task('default', ['html', 'styles', 'scripts', 'fonts', 'images'], function(
 });
 
 gulp.task('build', ['clean', 'html', 'styles', 'scripts', 'fonts', 'images'], function() {
-    gulp.src('dist/scripts/**/*.js')
-        .pipe($.stripDebug())
-        .pipe(gulp.dest('dist/scripts'));
+    process.exit();
 });
