@@ -135,16 +135,16 @@ class Game {
 
 		_.filter(this.threats, t => t.distance <= 0).forEach(t => this.surviveThreat(t));
 
-		// if(this.turn === 1)
-		// 	this.spawnThreat(VECTORS.LEFT);;
-		// if(this.turn === 3)
-		// 	this.spawnThreat(VECTORS.RIGHT);;
-		// if(this.turn === 4)
-		// 	this.spawnThreat(VECTORS.CENTER);
-		// if(this.turn === 7)
-		// 	this.spawnThreat(VECTORS.CENTER);;
-		// if(this.turn === 7)
-		// 	this.spawnThreat(VECTORS.LEFT);
+		if(this.turn === 1)
+			this.spawnThreat(VECTORS.LEFT);;
+		if(this.turn === 3)
+			this.spawnThreat(VECTORS.RIGHT);;
+		if(this.turn === 4)
+			this.spawnThreat(VECTORS.CENTER);
+		if(this.turn === 7)
+			this.spawnThreat(VECTORS.CENTER);;
+		if(this.turn === 7)
+			this.spawnThreat(VECTORS.LEFT);
 	}
 
 	simulatePlayerActions() {
@@ -260,7 +260,7 @@ class Game {
 	}
 
 	queueAction(player, action) {
-		this.playerActions.push(doAction.bind(this, player, action));
+		this.playerActions.push(this.doAction.bind(this, player, action));
 	}
 
 	getPlayer(playerId) {
