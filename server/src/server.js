@@ -6,7 +6,7 @@
 	const socketIo = require('socket.io');
 
 const settings = {
-	PORT: 8000,
+	PORT: process.env.PORT || 8000,
 	PUBLIC_ROOT: `${__dirname}/../../client/dist`
 };
 
