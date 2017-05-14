@@ -148,3 +148,20 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
         }
     }
 }]);
+
+
+// var app = angular.module('vrApp');
+
+app.directive('foo', ['$timeout', function ($timeout) {
+    return {
+        restrict: 'E',
+        templateUrl: 'views/foo.html',
+        scope: {},
+        bindToController: {},
+        controllerAs: 'ctrl',
+
+        controller: function($scope) {
+            var self = this;
+        }
+    }
+}]);

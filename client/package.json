@@ -50,8 +50,7 @@
   "engines": {
     "node": ">=0.10.0"
   },
-  "scripts": {
-  },
+  "scripts": {},
   "dependencies": {
     "angucomplete-alt": "2.5.0",
     "angular": "1.5.9",
@@ -62,10 +61,12 @@
     "angular-resource": "1.5.9",
     "angular-route": "1.5.9",
     "angular-sanitize": "1.5.9",
+    "angular-slick-carousel": "^3.1.7",
     "bootstrap": "3.3.7",
     "bootstrap-switch": "3.3.2",
     "jquery": "3.1.1",
     "lodash": "4.17.2",
-    "moment": "2.17.1"
+    "moment": "2.17.1",
+    "slick-carousel": "^1.6.0"
   }
 }

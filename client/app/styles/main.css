@@ -1,7 +1,27 @@
+html {
+    height: 100%;
+}
+
 body {
+    height: 100%;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
     font-size: 16px !important;
-    background-color: black;
+    background-image: url('/images/background.png');
+}
+
+.view-container {
+    height: 100%;
+}
+
+foo {
+    height: 100%;
+}
+
+.slider-room,
+.slick-list,
+.slick-track,
+.slick-slide {
+    height: 100%;
 }
 
 .map {

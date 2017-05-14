@@ -67,6 +67,12 @@ gulp.task('scripts', ['clean'], function(cb) {
         .on('end', function() {browserSync.reload()});
 });
 
+gulp.task('scripts-vendor', ['clean'], function(cb) {
+    return gulp.src(['./app/vendor/*.js'])
+        .pipe(gulp.dest('dist/scripts'))
+        .on('end', function() {browserSync.reload()});
+});
+
 gulp.task('styles', ['clean'], function() {
     gulp.src(['./app/styles/**/*.css'], { base: './app/styles/' })
         .pipe(gulp.dest('dist/styles'))
@@ -122,7 +128,7 @@ gulp.task('clean', function(cb) {
 //         .pipe(gulp.dest('dist/scripts'));
 // });
 
-gulp.task('default', ['html', 'styles', 'scripts', 'fonts', 'images'], function() {
+gulp.task('default', ['html', 'styles', 'scripts', 'scripts-vendor', 'fonts', 'images'], function() {
     var backendHost = 'localhost';
     var backendPort = '8000';
 
