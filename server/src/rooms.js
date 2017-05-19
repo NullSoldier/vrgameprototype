@@ -43,7 +43,6 @@ class WeaponRoom extends Room {
 	}
 
 	tryAction(player, action) {
-		console.log('foo', action.name)
 		if(action.name === 'gun')
 			this.fireGun();
 	}

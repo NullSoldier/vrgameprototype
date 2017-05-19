@@ -28,7 +28,7 @@ class Game {
 		this.sockets = sockets;
 		this.players = [];
 		this.log = new Log();
-		this.startRoom = ROOMS.TOP_CENTER;
+		this.startRoom = ROOMS.BOTTOM_CENTER;
 
 		this.goToState(GAME_STATE.WAITING);
 	}

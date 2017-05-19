@@ -1,0 +1,36 @@
+.threatdetector table.track {
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.threatdetector table.track .track-threat {
+    position: relative;
+    color: black;
+}
+
+.threatdetector table.track tr {
+    border-top: 1px dashed rgba(20, 20, 20, 0.1);
+}
+
+.threatdetector table.track td {
+    text-align: center;
+    width: 175px;
+    height: 20px;
+}
+
+.threatdetector table.track td.notrack {
+    background-color: #A3FEBA;
+}
+
+.threatdetector table.track td.trackx {
+    background-color: #FFFF99;
+}
+
+.threatdetector table.track td.tracky {
+    background-color: #FFB347;
+}
+
+.threatdetector table.track td.trackz {
+    background-color: #FF7575;
+}

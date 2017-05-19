@@ -36,10 +36,6 @@ angular
                 name: 'gameslist',
                 template: '<game-list></game-list>',
             })
-            .when('/foo/', {
-                name: 'foo',
-                template: '<foo></foo>',
-            })
             .when('/games/:gameId/', {
                 name: 'game',
                 template: '<game></game>',

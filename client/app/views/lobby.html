@@ -1,0 +1,11 @@
+<div style="font-size:32px;">
+    Players
+    <ul>
+        <li ng-repeat="p in players track by p.id">{{p.id}} <span ng-if="p.id === player.id">(ME)</span></li>
+        <li>Waiting for players...</li>
+    </ul>
+
+    <div style="margin-top:15px">
+        <button ng-click="startGame()">Start Game</button>
+    </div>
+</div>

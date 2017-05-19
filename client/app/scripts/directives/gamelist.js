@@ -15,7 +15,7 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
             var self = this;
             var socket = null;
 
-            $scope.debug = false;
+            $scope.debug = true;
             $scope.room = 'TOP_LEFT';
             $scope.player = null;
             $scope.state = 'NOT_CONNECTED';
@@ -25,7 +25,17 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
             function getThreatOffsetY(threat) {
                 var delta = (Date.now() - $scope.lastTurnAt) / $scope.turnLength;
                 var offset = (threat.speed * 20) * Math.min(delta, 1.0);
-                return offset + 'px';
+                return Math.floor(offset) + 'px';
+            }
+
+            function getRoomName(room) {
+                if(room === 'TOP_LEFT') return 'LEFT FLANK';
+                if(room === 'TOP_CENTER') return 'BRIDGE';
+                if(room === 'TOP_RIGHT') return 'RIGHT FLANK';
+                if(room === 'BOTTOM_LEFT') return 'LEFT FUEL ROOM';
+                if(room === 'BOTTOM_CENTER') return 'REACTOR';
+                if(room === 'BOTTOM_RIGHT') return 'RIGHT FUEL ROOM';
+                throw 'Room not supported' + room
             }
 
             function shakeScreen() {
@@ -51,6 +61,7 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
             }
 
             function startGame() {
+                console.log('starting')
                 socket.emit('start', {});
             }
 
@@ -77,7 +88,11 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
 
             function getPowerPercent(room) {
                 const percent = $scope.ship.rooms[room].power / $scope.ship.rooms[room].maxPower;
-                return (1 - percent) * 100 + '%';
+                return percent * 100 + '%';
+            }
+
+            function getProgressPercent() {
+                return (turn / 10) * 100 + '%';
             }
 
             function getThreatsAt(vector, distance) {
@@ -143,25 +158,10 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
             $scope.getCells = getCells;
             $scope.getThreatOffsetY = getThreatOffsetY;
             $scope.getPowerPercent = getPowerPercent;
+            $scope.getRoomName = getRoomName;
+            $scope.getProgressPercent = getProgressPercent;
             $scope.fireGun = fireGun;
             $scope.replenish = replenish;
-        }
-    }
-}]);
-
-
-// var app = angular.module('vrApp');
-
-app.directive('foo', ['$timeout', function ($timeout) {
-    return {
-        restrict: 'E',
-        templateUrl: 'views/foo.html',
-        scope: {},
-        bindToController: {},
-        controllerAs: 'ctrl',
-
-        controller: function($scope) {
-            var self = this;
         }
     }
 }]);
