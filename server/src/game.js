@@ -28,7 +28,7 @@ class Game {
 		this.sockets = sockets;
 		this.players = [];
 		this.log = new Log();
-		this.startRoom = ROOMS.BOTTOM_CENTER;
+		this.startRoom = ROOMS.TOP_CENTER;
 
 		this.goToState(GAME_STATE.WAITING);
 	}
@@ -135,16 +135,16 @@ class Game {
 
 		_.filter(this.threats, t => t.distance <= 0).forEach(t => this.surviveThreat(t));
 
-		// if(this.turn === 1)
-		// 	this.spawnThreat(VECTORS.LEFT);;
-		// if(this.turn === 3)
-		// 	this.spawnThreat(VECTORS.RIGHT);;
-		// if(this.turn === 4)
-		// 	this.spawnThreat(VECTORS.CENTER);
-		// if(this.turn === 7)
-		// 	this.spawnThreat(VECTORS.CENTER);;
-		// if(this.turn === 7)
-		// 	this.spawnThreat(VECTORS.LEFT);
+		if(this.turn === 1)
+			this.spawnThreat(VECTORS.LEFT);;
+		if(this.turn === 3)
+			this.spawnThreat(VECTORS.RIGHT);;
+		if(this.turn === 4)
+			this.spawnThreat(VECTORS.CENTER);
+		if(this.turn === 7)
+			this.spawnThreat(VECTORS.CENTER);;
+		if(this.turn === 7)
+			this.spawnThreat(VECTORS.LEFT);
 	}
 
 	simulatePlayerActions() {
