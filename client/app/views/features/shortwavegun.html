@@ -1,0 +1,23 @@
+<div class="feature gun shortwavegun">
+    <div class="feature-title">
+        <img src="/images/icon-gun.png" class="feature-title-icon">
+        Short Pulse Wave
+    </div>
+
+    <div class="gun-stats">
+        <div>
+            <b>Range</b>
+            <span class="gun-stats-red">red</span>
+            <span class="gun-stats-orange">orange</span>
+        </div>
+        <div><b>Damage</b> 1</div>
+        <div>Attacks ALL directions</div>
+    </div>
+
+    <button
+        class="gun-fire btn btn-warning"
+        ng-click="fireGun()"
+        ng-disabled="ship.rooms[player.room].gun.fired">
+        {{ ship.rooms[player.room].gun.fired ? 'Firing' : 'Fire' }}
+    </button>
+</div>

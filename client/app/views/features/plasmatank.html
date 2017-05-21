@@ -1,0 +1,20 @@
+<div class="feature plasmatank">
+    <div class="feature-title">
+        <img src="/images/icon-plasma.png" class="feature-title-icon">
+        Plasma Tank
+    </div>
+
+    <div class="plasmatank-description">
+        Powers plasma guns <img src="/images/icon-gun.png" class="plasmatank-description-icon"> and requires refilling from the Reactor <img src="/images/icon-reactor.png" class="plasmatank-description-icon">
+    </div>
+
+    <div class="plasmatank-tank">
+        <div class="plasmatank-meter" ng-style="{'width': getPowerPercent('BOTTOM_LEFT')}"></div>
+    </div>
+
+    <button
+        class="plasmatank-consume btn btn-success"
+        ng-click="replenish()">
+        Take from Reactor
+    </button>
+</div>

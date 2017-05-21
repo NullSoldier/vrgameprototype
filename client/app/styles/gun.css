@@ -1,17 +1,11 @@
 .gun .gun-stats {
     font-size: 24px;
-    padding-left: 20px;
+    padding-left: 25px;
 }
 
-.gun .gun-fire {
-    display: block;
-    font-size: 30px;
-    width: 80%;
-    height: 80px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-top: 20px;
-    color: black;
+.gun .gun-stats .gun-stats-icon {
+    height: 24px;
+    display: inline;
 }
 
 .gun .gun-stats .gun-stats-red {
@@ -30,4 +24,15 @@
     padding: 4px;
     color: black;
     background-color: yellow;
+}
+
+.gun .gun-fire {
+    display: block;
+    font-size: 30px;
+    width: 80%;
+    height: 80px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+    color: black;
 }

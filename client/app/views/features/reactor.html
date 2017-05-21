@@ -1,0 +1,23 @@
+<div class="feature reactor">
+    <div class="feature-title">
+        <img src="/images/icon-plasma.png" class="feature-title-icon">
+        Plasma Reactor
+    </div>
+
+    <div class="reactor-tank">
+        <div class="reactor-meter" ng-style="{'width': getPowerPercent('BOTTOM_CENTER')}"></div>
+    </div>
+
+    <div class="reactor-core-count">
+        <div>{{ship.rooms.BOTTOM_CENTER.cores}} Plasma Cores</div>
+        <img src="/images/icon-plasma.png" class="reactor-plasma-core" ng-if="ship.rooms.BOTTOM_CENTER.cores >= 1">
+        <img src="/images/icon-plasma.png" class="reactor-plasma-core" ng-if="ship.rooms.BOTTOM_CENTER.cores >= 2">
+        <img src="/images/icon-plasma.png" class="reactor-plasma-core" ng-if="ship.rooms.BOTTOM_CENTER.cores >= 3">
+    </div>
+
+    <button
+        class="reactor-consume btn btn-success"
+        ng-click="replenish()">
+        Fill Reactor
+    </button>
+</div>

@@ -1,84 +1,34 @@
 .spaceview {
     width: 100%;
-    height: 30%;
+    height: 20%;
     position: relative;
     overflow: hidden;
     background-image: url('/images/background.png');
 }
 
+/* Ship */
 .spaceview .ship {
-    width: 30%;
-    height: 100%;
-    position: absolute;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-    align-content: stretch;
-    align-items: center;
-}
-
-.spaceview .ship .ship-image {
-    width: 100%;
-    order: 0;
-    flex: 0 1 auto;
-    align-self: auto;
-}
-
-.spaceview .ship .ship-rooms {
-    height: 100%;
-    position: absolute;
-    order: 1;
-    flex: 0 1 auto;
-    align-self: auto;
-}
-
-.spaceview .ship-room {
-    height: 33%;
-    border: 1px solid black;
-    position: relative;
-}
-
-.spaceview .ship-room .ship-room-icon {
-    width: 40%;
-    height: 40%;
-    position: absolute;
-    top: 0;
-    left: 0;
-}
-
-.spaceview .ship-room > img {
     height: 100%;
 }
 
-.spaceview .ship .ship-rooms .ship-room-active {
-    border: 2px dashed yellow;
+.spaceview .ship-room rect {
+    width: 50px;
+    height: 50px;
+    fill: url(#roomBackgroundImg);
+    stroke-width: 1px;
+    stroke: rgb(0, 0, 0);
 }
 
-.spaceview .ship .ship-rooms .ship-room-top-left {
-    background-color: rgba(255, 0, 0, 0.5);
+.spaceview .ship-room image {
+    width: 20px;
+    height: 20px;
 }
 
-.spaceview .ship .ship-rooms .ship-room-top-center {
-    background-color: rgba(100, 100, 100, 0.7);
+.spaceview .ship .ship-room.ship-room-active rect {
+    stroke: rgb(255, 0, 0);
 }
 
-.spaceview .ship .ship-rooms .ship-room-top-right {
-    background-color: rgba(0, 0, 255, 0.5);
-}
-
-.spaceview .ship .ship-rooms .ship-room-bottom-left {
-    background-color: rgba(255, 0, 0, 0.5);
-}
-
-.spaceview .ship .ship-rooms .ship-room-bottom-center {
-    background-color: rgba(100, 100, 100, 0.7);
-}
-
-.spaceview .ship .ship-rooms .ship-room-bottom-right {
-    background-color: rgba(0, 0, 255, 0.5);
-}
-
+/* Threats */
 .spaceview .threats .threat {
     position: absolute;
     height: 33%;

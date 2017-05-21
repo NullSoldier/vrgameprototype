@@ -1,4 +1,5 @@
 .feature-container {
+    border-top: 2px solid black;
     background: url('/images/noise2.png');
     color: white;
     width: 100%;
@@ -14,8 +15,17 @@
     margin-bottom: 8px;
 }
 
+.feature-container .feature .feature-title-icon {
+    display: inline;
+    vertical-align: middle;
+    height: 16px;
+}
+
 .feature-pips-container {
-    background: url('/images/noise.png');
+    position: absolute;
+    bottom:0;
+    margin-left: auto;
+    margin-right: auto;
     text-align: center;
     width: 100%;
     height: 8%;

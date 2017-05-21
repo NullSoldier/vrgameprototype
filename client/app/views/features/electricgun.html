@@ -1,0 +1,24 @@
+<div class="feature gun rechargegun">
+    <div class="feature-title">
+        <img src="/images/icon-electric.png" class="feature-title-icon">
+        Electric Gun
+    </div>
+
+    <div class="gun-stats">
+        <div>
+            <b>Range</b>
+            <span class="gun-stats-red">red</span>
+            <span class="gun-stats-orange">orange</span>
+            <span class="gun-stats-yellow">yellow</span>
+        </div>
+        <div><b>Damage</b> 2</div>
+        <div>Doesn't consume plasma fuel <img src="/images/icon-plasma.png" class="gun-stats-icon"></div>
+    </div>
+
+    <button
+        class="gun-fire btn btn-warning"
+        ng-click="fireGun()"
+        ng-disabled="ship.rooms[player.room].gun.fired">
+        {{ ship.rooms[player.room].gun.fired ? 'Firing' : 'Fire' }}
+    </button>
+</div>

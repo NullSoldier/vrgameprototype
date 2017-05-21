@@ -1,28 +1,51 @@
 <div class="spaceview">
-    <div class="threats">
-        <img src="images/enemyship3.png" class="threat threat-top" style="left:70%">
+    <!-- <div class="threats"> -->
+        <!-- <img src="images/enemyship3.png" class="threat threat-top" style="left:70%">
         <img src="images/enemyship1.png" class="threat threat-center" style="left:50%">
-        <img src="images/enemyship2.png" class="threat threat-bottom" style="left:90%">
-    </div>
+        <img src="images/enemyship2.png" class="threat threat-bottom" style="left:90%"> -->
+    <!-- </div> -->
 
-    <div class="ship">
-        <img class="ship-image" src="images/playership.png">
+    <svg class="ship" viewbox="0 0 250 150">
+        <defs>
+          <pattern id="roomBackgroundImg" patternUnits="userSpaceOnUse" width="100" height="100">
+            <image xlink:href="/images/noise.png" x="0" y="0" width="50" height="50" />
+          </pattern>
+        </defs>
 
-        <table class="ship-rooms">
-            <tr class="ship-row">
-                <td class="ship-room ship-room-bottom-left" ng-click="movePlayer('BOTTOM_LEFT')" ng-class="{'ship-room-active': player.room == 'BOTTOM_LEFT'}"><img class="ship-room-icon" src="/images/icon-plasma.png"><img src="images/pixel.png"></td>
-                <td class="ship-room ship-room-top-left" ng-click="movePlayer('TOP_LEFT')" ng-class="{'ship-room-active': player.room == 'TOP_LEFT'}"><img class="ship-room-icon" src="/images/icon-gun.png"><img src="images/pixel.png"></td>
-            </tr>
-            <tr class="ship-row">
-                <td class="ship-room ship-room-bottom-center" ng-click="movePlayer('BOTTOM_CENTER')" ng-class="{'ship-room-active': player.room == 'BOTTOM_CENTER'}"><img class="ship-room-icon" src="/images/icon-reactor.png"><img src="images/pixel.png"></td>
-                <td class="ship-room ship-room-top-center" ng-click="movePlayer('TOP_CENTER')" ng-class="{'ship-room-active': player.room == 'TOP_CENTER'}"><img class="ship-room-icon" src="/images/icon-helm.png"><img src="images/pixel.png"></td>
-            </tr>
-            <tr class="ship-row">
-                <td class="ship-room ship-room-bottom-right" ng-click="movePlayer('BOTTOM_RIGHT')" ng-class="{'ship-room-active': player.room == 'BOTTOM_RIGHT'}"><img class="ship-room-icon" src="/images/icon-plasma.png"><img src="images/pixel.png"></td>
-                <td class="ship-room ship-room-top-right" ng-click="movePlayer('TOP_RIGHT')" ng-class="{'ship-room-active': player.room == 'TOP_RIGHT'}"><img class="ship-room-icon" src="/images/icon-gun.png"><img src="images/pixel.png"></td>
-            </tr>
-        </table>
-    </div>
+        <g class="ship-room" transform="translate(0, 0)" ng-click="movePlayer('BOTTOM_LEFT')" ng-class="{'ship-room-active': player.room == 'BOTTOM_LEFT'}">
+            <rect x="0" y="0"></rect>
+            <image xlink:href="/images/icon-plasma.png" x="0" y="0"/>
+            <image xlink:href="/images/icon-electric.png" x="20" y="0"/>
+        </g>
+
+        <g class="ship-room" transform="translate(0, 50)" ng-click="movePlayer('BOTTOM_CENTER')" ng-class="{'ship-room-active': player.room == 'BOTTOM_CENTER'}">
+            <rect x="0" y="0"></rect>
+            <image xlink:href="/images/icon-reactor.png" x="0" y="0"/>
+            <image xlink:href="/images/icon-gun.png" x="20" y="0"/>
+        </g>
+
+        <g class="ship-room" transform="translate(0, 100)" ng-click="movePlayer('BOTTOM_RIGHT')" ng-class="{'ship-room-active': player.room == 'BOTTOM_RIGHT'}">
+            <rect x="0" y="0"></rect>
+            <image xlink:href="/images/icon-plasma.png" x="0" y="0"/>
+            <image xlink:href="/images/icon-electric.png" x="20" y="0"/>
+        </g>
+
+        <g class="ship-room" transform="translate(50, 0)" ng-click="movePlayer('TOP_LEFT')" ng-class="{'ship-room-active': player.room == 'TOP_LEFT'}">
+            <rect x="0" y="0"></rect>
+            <image xlink:href="/images/icon-gun.png" x="0" y="0"/>
+        </g>
+
+        <g class="ship-room" transform="translate(50, 50)" ng-click="movePlayer('TOP_CENTER')" ng-class="{'ship-room-active': player.room == 'TOP_CENTER'}">
+            <rect x="0" y="0"></rect>
+            <image xlink:href="/images/icon-helm.png" x="0" y="0"/>
+            <image xlink:href="/images/icon-gun.png" x="20" y="0"/>
+        </g>
+
+        <g class="ship-room" transform="translate(50, 100)" ng-click="movePlayer('TOP_RIGHT')" ng-class="{'ship-room-active': player.room == 'TOP_RIGHT'}">
+            <rect x="0" y="0"></rect>
+            <image xlink:href="/images/icon-gun.png" x="0" y="0"/>
+        </g>
+    </svg>
 </div>
 
 <div class="feature-pips-container">
@@ -37,164 +60,46 @@
         <img src="/images/icon-gun.png" class="feature-pip">
     </div>
     <div ng-if="player.room == 'BOTTOM_LEFT'">
-        <img src="/images/icon-gun.png" class="feature-pip">
         <img src="/images/icon-plasma.png" class="feature-pip">
+        <img src="/images/icon-electric.png" class="feature-pip">
     </div>
     <div ng-if="player.room == 'BOTTOM_CENTER'">
         <img src="/images/icon-reactor.png" class="feature-pip">
         <img src="/images/icon-gun.png" class="feature-pip">
     </div>
     <div ng-if="player.room == 'BOTTOM_RIGHT'">
-        <img src="/images/icon-gun.png" class="feature-pip">
         <img src="/images/icon-plasma.png" class="feature-pip">
+        <img src="/images/icon-electric.png" class="feature-pip">
     </div>
 </div>
 
 <div class="feature-container">
-    <slick class="slider slider-room single-item" infinite="false" arrows="false">
 
-        <div class="feature threatdetector" ng-show="player.room == 'TOP_CENTER'">
-            <div class="feature-title">Threat Sensor</div>
+    <slick class="slider slider-room single-item" infinite="false" arrows="false" ng-if="player.room == 'TOP_LEFT'">
+        <div><div ng-include="'views/features/plasmagun.html'"></div></div>
+    </slick>
 
-            <table>
-                <tr>
-                    <td valign="bottom" ng-repeat="track in tracks track by track.vector">
-                        <table class="track">
-                            <tr ng-repeat="cell in getCells(track) track by $index">
-                                <td ng-class="{
-                                    trackz: (track.length) - $index <= track.zPos,
-                                    tracky: (track.length) - $index <= track.yPos && (track.length-1) - $index >= track.zPos,
-                                    trackx: (track.length) - $index <= track.xPos && (track.length-1) - $index >= track.yPos,
-                                    notrack: (track.length) - $index > track.xPos}">
-                                    &nbsp;<span
-                                        class="track-threat"
-                                        ng-style="{'top': getThreatOffsetY(threat)}"
-                                        ng-repeat="threat in getThreatsAt(track.vector, (track.length - 1) - $index) track by threat.id">
-                                        {{threat.name}}
-                                    </span>
-                                </td>
-                            </tr>
+    <slick class="slider slider-room single-item" infinite="false" arrows="false" ng-if="player.room == 'TOP_CENTER'">
+        <div><div ng-include="'views/features/threatdetector.html'"></div></div>
+        <div><div ng-include="'views/features/plasmagun.html'"></div></div>
+    </slick>
 
-                            <tr><td>{{track.vector}}, {{ship.health[track.vector]}} HP</td></tr>
-                        </table>
-                    </td>
-                </tr>
-            </table>
-        </div>
+    <slick class="slider slider-room single-item" infinite="false" arrows="false" ng-if="player.room == 'TOP_RIGHT'">
+        <div><div ng-include="'views/features/plasmagun.html'"></div></div>
+    </slick>
 
-        <div class="feature gun plasmagun" ng-show="player.room == 'TOP_LEFT' || player.room == 'TOP_CENTER' || player.room == 'TOP_RIGHT'">
-            <div class="feature-title">Plasma Gun</div>
+    <slick class="slider slider-room single-item" infinite="false" arrows="false" ng-if="player.room == 'BOTTOM_LEFT'">
+        <div><div ng-include="'views/features/plasmatank.html'"></div></div>
+        <div><div ng-include="'views/features/electricgun.html'"></div></div>
+    </slick>
 
-            <div class="gun-stats">
-                <div>
-                    <b>Range</b>
-                    <span class="gun-stats-red">red</span>
-                    <span class="gun-stats-orange">orange</span>
-                    <span class="gun-stats-yellow">yellow</span>
-                </div>
-                <div><b>Damage</b> 4</div>
-                <div><img style="display:inline" src="/images/icon-plasma.png" height="24px"> Consumes plasma fuel</div>
-            </div>
+    <slick class="slider slider-room single-item" infinite="false" arrows="false" ng-if="player.room == 'BOTTOM_CENTER'">
+        <div><div ng-include="'views/features/reactor.html'"></div></div>
+        <div><div ng-include="'views/features/shortwavegun.html'"></div></div>
+    </slick>
 
-            <button
-                class="gun-fire btn btn-warning"
-                ng-click="fireGun()"
-                ng-disabled="ship.rooms[player.room].gun.fired">
-                {{ ship.rooms[player.room].gun.fired ? 'Firing' : 'Fire' }}
-            </button>
-        </div>
-
-        <div class="feature gun rechargegun" ng-show="player.room == 'BOTTOM_LEFT' || player.room == 'BOTTOM_RIGHT'">
-            <div class="feature-title">Electric Gun</div>
-
-            <div class="gun-stats">
-                <div>
-                    <b>Range</b>
-                    <span class="gun-stats-red">red</span>
-                    <span class="gun-stats-orange">orange</span>
-                    <span class="gun-stats-yellow">yellow</span>
-                </div>
-                <div><b>Damage</b> 2</div>
-                <div>Does NOT consume plasma fuel</div>
-            </div>
-
-            <button
-                class="gun-fire btn btn-warning"
-                ng-click="fireGun()"
-                ng-disabled="ship.rooms[player.room].gun.fired">
-                {{ ship.rooms[player.room].gun.fired ? 'Firing' : 'Fire' }}
-            </button>
-        </div>
-
-        <div class="feature plasmatank" ng-show="player.room == 'BOTTOM_LEFT' || player.room == 'BOTTOM_RIGHT'">
-            <div class="feature-title">Plasma Tank</div>
-
-            <div style="width: 50px; height: 190px; background-color: green; border: 1px solid black">
-                <div style="width:100%; background-color: white" ng-style="{'height': getPowerPercent('BOTTOM_LEFT')}"></div>
-            </div>
-
-            <button
-                class="btn btn-info"
-                display="inline-block"
-                style="width:130px"
-                ng-click="replenish()">
-                Replenish from Reactor
-            </button>
-        </div>
-
-        <div class="feature reactor" ng-show="player.room == 'BOTTOM_CENTER'">
-            <div class="feature-title">Plasma Reactor</div>
-
-            <div class="reactor-tank">
-                <div class="reactor-meter" ng-style="{'width': getPowerPercent('BOTTOM_CENTER')}"></div>
-            </div>
-
-            <div class="reactor-core-count">
-                <div>{{ship.rooms.BOTTOM_CENTER.cores}} Plasma Cores</div>
-                <img src="/images/icon-plasma.png" class="reactor-plasma-core" ng-if="ship.rooms.BOTTOM_CENTER.cores >= 1">
-                <img src="/images/icon-plasma.png" class="reactor-plasma-core" ng-if="ship.rooms.BOTTOM_CENTER.cores >= 2">
-                <img src="/images/icon-plasma.png" class="reactor-plasma-core" ng-if="ship.rooms.BOTTOM_CENTER.cores >= 3">
-            </div>
-
-            <button
-                class="reactor-consume btn btn-primary"
-                ng-click="replenish()">
-                Fill Reactor
-            </button>
-        </div>
-
-        <div class="feature gun shortwavegun" ng-show="player.room == 'BOTTOM_CENTER'">
-            <div class="feature-title">Short Pulse Wave</div>
-
-            <div class="gun-stats">
-                <div>
-                    <b>Range</b>
-                    <span class="gun-stats-red">red</span>
-                    <span class="gun-stats-orange">orange</span>
-                </div>
-                <div><b>Damage</b> 1</div>
-                <div>Attacks ALL directions</div>
-            </div>
-
-            <button
-                class="gun-fire btn btn-warning"
-                ng-click="fireGun()"
-                ng-disabled="ship.rooms[player.room].gun.fired">
-                {{ ship.rooms[player.room].gun.fired ? 'Firing' : 'Fire' }}
-            </button>
-        </div>
-
-        <!-- <div class="feature debug" ng-if="debug">
-            <div class="feature-title">Debug</div>
-            <div>
-                <b>Turn:</b> {{turn}}<br/>
-                <b>State:</b> {{state}}<br/>
-                <b>Player:</b> {{player}}<br/>
-                <b>Tracks:</b> {{tracks}}<br/>
-                <b>Threats:</b> {{threats}}<br/>
-                <b>Ship:</b> {{ship}}<br/>
-            </div>
-        </div> -->
-
+    <slick class="slider slider-room single-item" infinite="false" arrows="false" ng-if="player.room == 'BOTTOM_RIGHT'">
+        <div><div ng-include="'views/features/plasmatank.html'"></div></div>
+        <div><div ng-include="'views/features/electricgun.html'"></div></div>
     </slick>
 </div>
