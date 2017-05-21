@@ -1,4 +1,5 @@
 .threatdetector table.track {
+    border: none;
     width: 80%;
     margin-left: auto;
     margin-right: auto;
@@ -10,27 +11,34 @@
 }
 
 .threatdetector table.track tr {
-    border-top: 1px dashed rgba(20, 20, 20, 0.1);
+    border: none;
 }
 
 .threatdetector table.track td {
+    border: none;
     text-align: center;
     width: 175px;
     height: 20px;
 }
 
-.threatdetector table.track td.notrack {
+.threatdetector table.track tr.notrack td {
     background-color: #A3FEBA;
 }
 
-.threatdetector table.track td.trackx {
+.threatdetector table.track tr.trackx td {
     background-color: #FFFF99;
 }
 
-.threatdetector table.track td.tracky {
+.threatdetector table.track tr.tracky td {
     background-color: #FFB347;
 }
 
-.threatdetector table.track td.trackz {
+.threatdetector table.track tr.trackz td {
     background-color: #FF7575;
+}
+
+.threatdetector table.track tr.notrack + tr.trackx,
+.threatdetector table.track tr.trackx + tr.tracky,
+.threatdetector table.track tr.tracky + tr.trackz {
+    border-top: 1px dashed rgba(20, 20, 20, 0.25);
 }

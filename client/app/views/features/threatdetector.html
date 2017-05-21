@@ -8,12 +8,14 @@
         <tr>
             <td valign="bottom" ng-repeat="track in tracks track by track.vector">
                 <table class="track">
-                    <tr ng-repeat="cell in getCells(track) track by $index">
-                        <td ng-class="{
+                    <tr
+                        ng-repeat="cell in getCells(track) track by $index"
+                        ng-class="{
                             trackz: (track.length) - $index <= track.zPos,
                             tracky: (track.length) - $index <= track.yPos && (track.length-1) - $index >= track.zPos,
                             trackx: (track.length) - $index <= track.xPos && (track.length-1) - $index >= track.yPos,
                             notrack: (track.length) - $index > track.xPos}">
+                        <td>
                             &nbsp;<span
                                 class="track-threat"
                                 ng-style="{'top': getThreatOffsetY(threat)}"
