@@ -21,7 +21,7 @@ class Room {
 class WeaponRoom extends Room {
 	constructor(game, ship, room, track) {
 		super(game, ship, room, track);
-		this.gun = new EnergyGun(track);
+		this.gun = new EnergyGun(ship, track);
 	}
 
 	getBatteryRoom() {
@@ -34,17 +34,9 @@ class WeaponRoom extends Room {
 		throw new Error('Weapon room not attached to battery room');
 	}
 
-	fireGun() {
-		if(this.getBatteryRoom().consumePower(1)) {
-			console.log('firing');
-			this.gun.fire();
-			this.ship.firedGuns.push(this.gun);
-		}
-	}
-
 	tryAction(player, action) {
 		if(action.name === 'gun')
-			this.fireGun();
+			this.gun.trigger(this.getBatteryRoom());
 	}
 
 	serialize() {
@@ -57,17 +49,10 @@ class WeaponRoom extends Room {
 class ReactorRoom extends Room {
 	constructor(game, ship, room, track) {
 		super(game, ship, room, track);
-		this.gun = new ShortRangeWave(game);
+		this.gun = new ShortRangeWave(ship, game);
 		this.cores = 3;
 		this.power = 4;
 		this.maxPower = 6;
-	}
-
-	fireGun() {
-		if(this.consumePower(1)) {
-			this.gun.fire();
-			this.ship.firedGuns.push(this.gun);
-		}
 	}
 
 	consumePower(powerNeeded) {
@@ -87,7 +72,7 @@ class ReactorRoom extends Room {
 
 	tryAction(player, action) {
 		if(action.name === 'gun')
-			this.fireGun();
+			this.gun.trigger(this);
 		if(action.name === 'replenish')
 			this.replenishPower();
 	}
@@ -105,14 +90,9 @@ class ReactorRoom extends Room {
 class BatteryRoom extends Room {
 	constructor(game, ship, room, track) {
 		super(game, ship, room, track);
-		this.gun = new ElectricGun(track);
+		this.gun = new ElectricGun(ship, track);
 		this.power = 2;
 		this.maxPower = 3;
-	}
-
-	fireGun() {
-		this.gun.fire();
-		this.ship.firedGuns.push(this.gun);
 	}
 
 	consumePower(powerNeeded) {
@@ -134,7 +114,7 @@ class BatteryRoom extends Room {
 
 	tryAction(player, action) {
 		if(action.name === 'gun')
-			this.fireGun();
+			this.gun.trigger();
 		if(action.name === 'replenish')
 			this.replenishPower();
 	}

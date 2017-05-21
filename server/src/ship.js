@@ -8,7 +8,7 @@ const _           = require('lodash');
 class Ship {
 	constructor(game) {
 		this.game = game;
-		this.firedGuns = [];
+		this.triggeredGuns = [];
 
 		this.health = {}
 		this.health[VECTORS.LEFT] = 6;

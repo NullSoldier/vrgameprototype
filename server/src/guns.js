@@ -3,8 +3,9 @@ const VECTORS = require('./constants').VECTORS;
 
 class Gun {
 
-	constructor() {
-		this.fired = false;
+	constructor(ship) {
+		this.ship = ship;
+		this.triggered = false;
 		this.damage = 0;
 		this.range = 0; // number of sectors
 	}
@@ -32,17 +33,22 @@ class Gun {
 		return null;
 	}
 
-	fire() {
-		this.fired = true;
+	trigger() {
+		this.ship.triggeredGuns.push(this);
+		this.triggered = true;
+	}
+
+	resolve() {
+		return true;
 	}
 
 	reset() {
-		this.fired = false;
+		this.triggered = false;
 	}
 
 	serialize() {
 		return {
-			fired: this.fired,
+			fired: this.triggered,
 			damage: this.damage,
 			range: this.range,
 		}
@@ -50,11 +56,22 @@ class Gun {
 }
 
 class EnergyGun extends Gun {
-	constructor(track) {
-		super();
+	constructor(ship, track) {
+		console.log('eh', ship);
+		super(ship);
 		this.track = track;
 		this.damage = 5;
 		this.range = 3;
+		this.fuelsource = null;
+	}
+
+	trigger(fuelsource) {
+		super.trigger();
+		this.fuelsource = fuelsource;
+	}
+
+	resolve() {
+		return this.fuelsource.consumePower(1);
 	}
 
 	getTargets() {
@@ -63,11 +80,20 @@ class EnergyGun extends Gun {
 }
 
 class ShortRangeWave extends Gun {
-	constructor(game) {
-		super();
+	constructor(ship, game) {
+		super(ship);
 		this.game = game;
 		this.damage = 1;
 		this.range = 2;
+	}
+
+	trigger(fuelsource) {
+		super.trigger();
+		this.fuelsource = fuelsource;
+	}
+
+	resolve() {
+		return this.fuelsource.consumePower(1);
 	}
 
 	getTargets() {
@@ -80,8 +106,8 @@ class ShortRangeWave extends Gun {
 }
 
 class ElectricGun extends Gun {
-	constructor(track) {
-		super();
+	constructor(ship, track) {
+		super(ship);
 		this.track = track;
 		this.damage = 2;
 		this.range = 3;

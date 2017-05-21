@@ -163,18 +163,22 @@ class Game {
 	}
 
 	resolveGuns() {
-		if(this.ship.firedGuns.length < 0)
+		if(this.ship.triggeredGuns.length < 0)
 			return;
 
 		var totals = {};
 
-		while(this.ship.firedGuns.length) {
-			var gun = this.ship.firedGuns.pop();
-			for(var target of gun.getTargets()) {
-				if(!totals[target.id])
-					totals[target.id] = {threat: target, value: 0};
-				totals[target.id].value += gun.damage;
+		while(this.ship.triggeredGuns.length) {
+			var gun = this.ship.triggeredGuns.pop();
+
+			if(gun.resolve()) {
+				for(var target of gun.getTargets()) {
+					if(!totals[target.id])
+						totals[target.id] = {threat: target, value: 0};
+					totals[target.id].value += gun.damage;
+				}
 			}
+
 			gun.reset();
 		}
 
