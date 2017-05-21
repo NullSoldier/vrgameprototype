@@ -1,0 +1,6 @@
+.lobby-container {
+    height: 100%;
+    color: white;
+    background: url('/images/background.png');
+    font-size:18px;
+}

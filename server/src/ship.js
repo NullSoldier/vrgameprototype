@@ -22,6 +22,9 @@ class Ship {
 		this.rooms[ROOMS.BOTTOM_LEFT] = new BatteryRoom(this.game, this, ROOMS.BOTTOM_LEFT, this.game.tracks[VECTORS.LEFT]);
 		this.rooms[ROOMS.BOTTOM_CENTER] = new ReactorRoom(this.game, this, ROOMS.BOTTOM_CENTER, this.game.tracks[VECTORS.CENTER]);
 		this.rooms[ROOMS.BOTTOM_RIGHT] = new BatteryRoom(this.game, this, ROOMS.BOTTOM_RIGHT, this.game.tracks[VECTORS.RIGHT]);
+
+		for(var room of _.values(this.rooms))
+			room.load();
 	}
 
 	renderRoom(buffer, originX, originY, width, height) {

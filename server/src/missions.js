@@ -1,0 +1,129 @@
+const _          = require('lodash');
+const GAME_STATE = require('./constants').GAME_STATE;
+const threats    = require('./threats');
+const Track      = require('./track');
+const VECTORS    = require('./constants').VECTORS;
+
+const TRACK_CONFIGS = {
+	LONG: [17, 13, 06, 03],
+	MEDIUM: [15, 11, 04, 02],
+	SHORT: [10, 08, 05, 01],
+}
+
+class Mission {
+	constructor(game) {
+		this.game = game;
+		this.leftTrack = TRACK_CONFIGS.LONG;
+		this.centerTrack = TRACK_CONFIGS.LONG;
+		this.rightTrack = TRACK_CONFIGS.LONG;
+	}
+
+	spawnRandomThreat() {
+		var threatClass = threats[_.sample(_.keys(threats))];
+		var vector = _.sample(_.keys(vectors));
+		return this.spawnThreat(threatClass, vector);
+	}
+
+	spawnRandomThreatAt(vector) {
+		var threatClass = threats[_.sample(_.keys(threats))];
+		return this.spawnThreat(threatClass, vector);
+	}
+
+	spawnThreat(threatClass, vector) {
+		var threat = new threatClass(this.game, this.game.tracks[vector]);
+		this.game.log.write(`Threat ${threat.name} incoming at ` + vector);
+		this.game.threats.push(threat);
+		return threat;
+	}
+
+	nextTurn(turn) {
+	}
+
+	onThreatKilled(threat) {	
+	}
+
+	getTracks() {
+		var tracks = {};
+
+		tracks[VECTORS.LEFT] = new Track(this.game, VECTORS.LEFT,
+			this.leftTrack[0],
+			this.leftTrack[1],
+			this.leftTrack[2],
+			this.leftTrack[3]);
+
+		tracks[VECTORS.CENTER] = new Track(this.game, VECTORS.CENTER,
+			this.centerTrack[0],
+			this.centerTrack[1],
+			this.centerTrack[2],
+			this.centerTrack[3]);
+
+		tracks[VECTORS.RIGHT] = new Track(this.game, VECTORS.RIGHT,
+			this.rightTrack[0],
+			this.rightTrack[1],
+			this.rightTrack[2],
+			this.rightTrack[3]);
+
+		return tracks;
+	}
+}
+
+class Tutorial extends Mission {
+	constructor(game) {
+		super(game);
+		this.lastSpawnedDummyTurn = 0;
+		this.dummyTurnDelay = 5;
+		this.killCount = 0;
+		this.maxKillCount = 3;
+	}
+
+	nextTurn(turn) {
+		if(turn === 1)
+			this.spawnThreat(threats.Dummy, VECTORS.CENTER);
+
+		if(turn === 1 || turn === this.lastSpawnedDummyTurn + this.dummyTurnDelay) {
+			this.spawnThreat(threats.Dummy, VECTORS.CENTER);
+			this.lastSpawnedDummyTurn = turn;
+		}
+	}
+
+	onThreatKilled(threat) {
+		this.killCount += 1;
+
+		if(this.killCount >= this.maxKillCount) {
+			this.game.log.write('Players win the mission');
+			this.game.goToState(GAME_STATE.WAITING);
+		}
+	}
+
+	getTrackConfigs() {
+		return super.getTracks();
+	}
+}
+
+class Random extends Mission {
+	nextTurn(turn) {
+		if(turn === 1)
+			this.spawnRandomThreatAt(VECTORS.LEFT);
+		if(turn === 3)
+			this.spawnRandomThreatAt(VECTORS.RIGHT);
+		if(turn === 6)
+			this.spawnRandomThreatAt(VECTORS.CENTER);
+		if(turn === 7)
+			this.spawnRandomThreatAt(VECTORS.CENTER);
+		if(turn === 7)
+			this.spawnRandomThreatAt(VECTORS.LEFT);
+	}
+
+	getTrackConfigs() {
+		return {
+			LEFT: _.sample(TRACK_CONFIGS),
+			CENTER: _.sample(TRACK_CONFIGS),
+			RIGHT: _.sample(TRACK_CONFIGS),
+		}
+	}
+}
+
+module.exports = {
+	tutorial: Tutorial,
+	random: Random,
+}

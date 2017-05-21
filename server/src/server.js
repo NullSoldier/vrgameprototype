@@ -82,7 +82,7 @@ class Server {
 	}
 
 	socket_start(socket, player, data) {
-		this.game.start();
+		this.game.start(data.mission);
 	}
 
 	socket_action(socket, player, data) {

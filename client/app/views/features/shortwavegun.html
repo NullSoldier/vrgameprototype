@@ -17,7 +17,8 @@
     <button
         class="gun-fire btn btn-warning"
         ng-click="fireGun()"
-        ng-disabled="ship.rooms[player.room].gun.fired">
-        {{ ship.rooms[player.room].gun.fired ? 'Firing' : 'Fire' }}
+        ng-disabled="ship.rooms[player.room].gun.fired || !ship.rooms[player.room].gun.canFire">
+        {{ ship.rooms[player.room].gun.canFire ? ship.rooms[player.room].gun.fired ? 'Firing' : 'Fire' : 'Out of Plasma'}}
+        <img class="gun-fire-icon" ng-show="!ship.rooms[player.room].gun.canFire" src="/images/icon-plasma.png">
     </button>
 </div>

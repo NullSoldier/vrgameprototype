@@ -19,13 +19,13 @@
                             &nbsp;<span
                                 class="track-threat"
                                 ng-style="{'top': getThreatOffsetY(threat)}"
-                                ng-repeat="threat in getThreatsAt(track.vector, (track.length - 1) - $index) track by threat.id">
+                                ng-repeat="threat in getThreatsAt(track.vector, track.length - $index) track by threat.id">
                                 {{threat.name}}
                             </span>
                         </td>
                     </tr>
 
-                    <tr><td>{{track.vector}}, {{ship.health[track.vector]}} HP</td></tr>
+                    <tr><td>{{track.vector}}, {{ship.health[track.vector]}}</td></tr>
                 </table>
             </td>
         </tr>

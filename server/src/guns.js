@@ -46,8 +46,13 @@ class Gun {
 		this.triggered = false;
 	}
 
+	canFire() {
+		return true;
+	}
+
 	serialize() {
 		return {
+			canFire: this.canFire(),
 			fired: this.triggered,
 			damage: this.damage,
 			range: this.range,
@@ -57,7 +62,6 @@ class Gun {
 
 class EnergyGun extends Gun {
 	constructor(ship, track) {
-		console.log('eh', ship);
 		super(ship);
 		this.track = track;
 		this.damage = 5;
@@ -65,13 +69,12 @@ class EnergyGun extends Gun {
 		this.fuelsource = null;
 	}
 
-	trigger(fuelsource) {
-		super.trigger();
-		this.fuelsource = fuelsource;
-	}
-
 	resolve() {
 		return this.fuelsource.consumePower(1);
+	}
+
+	canFire() {
+		return this.fuelsource.power >= 1;
 	}
 
 	getTargets() {
@@ -85,11 +88,7 @@ class ShortRangeWave extends Gun {
 		this.game = game;
 		this.damage = 1;
 		this.range = 2;
-	}
-
-	trigger(fuelsource) {
-		super.trigger();
-		this.fuelsource = fuelsource;
+		this.fuelsource = null;
 	}
 
 	resolve() {

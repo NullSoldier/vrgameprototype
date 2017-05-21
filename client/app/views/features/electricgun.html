@@ -12,13 +12,13 @@
             <span class="gun-stats-yellow">yellow</span>
         </div>
         <div><b>Damage</b> 2</div>
-        <div>Doesn't consume plasma fuel <img src="/images/icon-plasma.png" class="gun-stats-icon"></div>
+        <div>Requires no plasma fuel <img src="/images/icon-plasma.png" class="gun-stats-icon"></div>
     </div>
 
     <button
         class="gun-fire btn btn-warning"
         ng-click="fireGun()"
-        ng-disabled="ship.rooms[player.room].gun.fired">
-        {{ ship.rooms[player.room].gun.fired ? 'Firing' : 'Fire' }}
+        ng-disabled="ship.rooms[player.room].gun.fired || !ship.rooms[player.room].gun.canFire">
+        {{ ship.rooms[player.room].gun.canFire ? ship.rooms[player.room].gun.fired ? 'Firing' : 'Fire' : 'Gun Broken?'}}
     </button>
 </div>

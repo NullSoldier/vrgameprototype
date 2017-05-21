@@ -9,19 +9,19 @@
 }
 
 .gun .gun-stats .gun-stats-red {
-    padding: 4px;
+    padding: 2px;
     color: black;
     background-color: red;
 }
 
 .gun .gun-stats .gun-stats-orange {
-    padding: 4px;
+    padding: 2px;
     color: black;
     background-color: orange;
 }
 
 .gun .gun-stats .gun-stats-yellow {
-    padding: 4px;
+    padding: 2px;
     color: black;
     background-color: yellow;
 }
@@ -35,4 +35,9 @@
     margin-right: auto;
     margin-top: 20px;
     color: black;
+}
+
+.gun .gun-fire .gun-fire-icon {
+    display: inline;
+    height: 40px;
 }

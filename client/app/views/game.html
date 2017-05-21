@@ -1,9 +1,23 @@
+<img src="/images/explosion.png" class="explosion-fail explosion-1" ng-class="{'explosion-active': state === 'FAIL'}" ng-if="state === 'FAIL'">
+<img src="/images/explosion.png" class="explosion-fail explosion-2" ng-class="{'explosion-active': state === 'FAIL'}" ng-if="state === 'FAIL'">
+<img src="/images/explosion.png" class="explosion-fail explosion-3" ng-class="{'explosion-active': state === 'FAIL'}" ng-if="state === 'FAIL'">
+<img src="/images/explosion.png" class="explosion-fail explosion-4" ng-class="{'explosion-active': state === 'FAIL'}" ng-if="state === 'FAIL'">
+
 <div class="spaceview">
-    <!-- <div class="threats"> -->
-        <!-- <img src="images/enemyship3.png" class="threat threat-top" style="left:70%">
-        <img src="images/enemyship1.png" class="threat threat-center" style="left:50%">
-        <img src="images/enemyship2.png" class="threat threat-bottom" style="left:90%"> -->
-    <!-- </div> -->
+    <div class="threats">
+        <div
+            class="threat"
+            ng-repeat="threat in threats track by threat.id"
+            ng-style="{left: getThreatOffsetX(threat)}"
+            ng-class="{
+                'threat-top': threat.track === 'LEFT',
+                'threat-center': threat.track === 'CENTER',
+                'threat-bottom': threat.track === 'RIGHT'
+            }">
+            <div class="threat-fire" ng-class="{'threat-fire-active': threat.showFired}" ng-style="{'background-color': threat.showFiredColor}"></div>
+            <img class="threat-image" ng-src="{{getThreatImageSrc(threat)}}">:
+        </div>
+    </div>
 
     <svg class="ship" viewbox="0 0 250 150">
         <defs>
@@ -48,58 +62,59 @@
     </svg>
 </div>
 
-<div class="feature-pips-container">
-    <div ng-if="player.room == 'TOP_LEFT'">
-        <img src="/images/icon-gun.png" class="feature-pip">
-    </div>
-    <div ng-if="player.room == 'TOP_CENTER'">
-        <img src="/images/icon-helm.png" class="feature-pip">
-        <img src="/images/icon-gun.png" class="feature-pip">
-    </div>
-    <div ng-if="player.room == 'TOP_RIGHT'">
-        <img src="/images/icon-gun.png" class="feature-pip">
-    </div>
-    <div ng-if="player.room == 'BOTTOM_LEFT'">
-        <img src="/images/icon-plasma.png" class="feature-pip">
-        <img src="/images/icon-electric.png" class="feature-pip">
-    </div>
-    <div ng-if="player.room == 'BOTTOM_CENTER'">
-        <img src="/images/icon-reactor.png" class="feature-pip">
-        <img src="/images/icon-gun.png" class="feature-pip">
-    </div>
-    <div ng-if="player.room == 'BOTTOM_RIGHT'">
-        <img src="/images/icon-plasma.png" class="feature-pip">
-        <img src="/images/icon-electric.png" class="feature-pip">
-    </div>
-</div>
-
 <div class="feature-container">
+    <div class="feature-slider-container">
+        <slick class="slider slider-room single-item" infinite="false" arrows="false" ng-if="player.room == 'TOP_LEFT'">
+            <div><div ng-include="'views/features/plasmagun.html'"></div></div>
+        </slick>
 
-    <slick class="slider slider-room single-item" infinite="false" arrows="false" ng-if="player.room == 'TOP_LEFT'">
-        <div><div ng-include="'views/features/plasmagun.html'"></div></div>
-    </slick>
+        <slick class="slider slider-room single-item" infinite="false" arrows="false" ng-if="player.room == 'TOP_CENTER'">
+            <div><div ng-include="'views/features/threatdetector.html'"></div></div>
+            <div><div ng-include="'views/features/plasmagun.html'"></div></div>
+        </slick>
 
-    <slick class="slider slider-room single-item" infinite="false" arrows="false" ng-if="player.room == 'TOP_CENTER'">
-        <div><div ng-include="'views/features/threatdetector.html'"></div></div>
-        <div><div ng-include="'views/features/plasmagun.html'"></div></div>
-    </slick>
+        <slick class="slider slider-room single-item" infinite="false" arrows="false" ng-if="player.room == 'TOP_RIGHT'">
+            <div><div ng-include="'views/features/plasmagun.html'"></div></div>
+        </slick>
 
-    <slick class="slider slider-room single-item" infinite="false" arrows="false" ng-if="player.room == 'TOP_RIGHT'">
-        <div><div ng-include="'views/features/plasmagun.html'"></div></div>
-    </slick>
+        <slick class="slider slider-room single-item" infinite="false" arrows="false" ng-if="player.room == 'BOTTOM_LEFT'">
+            <div><div ng-include="'views/features/plasmatank.html'"></div></div>
+            <div><div ng-include="'views/features/electricgun.html'"></div></div>
+        </slick>
 
-    <slick class="slider slider-room single-item" infinite="false" arrows="false" ng-if="player.room == 'BOTTOM_LEFT'">
-        <div><div ng-include="'views/features/plasmatank.html'"></div></div>
-        <div><div ng-include="'views/features/electricgun.html'"></div></div>
-    </slick>
+        <slick class="slider slider-room single-item" infinite="false" arrows="false" ng-if="player.room == 'BOTTOM_CENTER'">
+            <div><div ng-include="'views/features/reactor.html'"></div></div>
+            <div><div ng-include="'views/features/shortwavegun.html'"></div></div>
+        </slick>
 
-    <slick class="slider slider-room single-item" infinite="false" arrows="false" ng-if="player.room == 'BOTTOM_CENTER'">
-        <div><div ng-include="'views/features/reactor.html'"></div></div>
-        <div><div ng-include="'views/features/shortwavegun.html'"></div></div>
-    </slick>
+        <slick class="slider slider-room single-item" infinite="false" arrows="false" ng-if="player.room == 'BOTTOM_RIGHT'">
+            <div><div ng-include="'views/features/plasmatank.html'"></div></div>
+            <div><div ng-include="'views/features/electricgun.html'"></div></div>
+        </slick>
+    </div>
 
-    <slick class="slider slider-room single-item" infinite="false" arrows="false" ng-if="player.room == 'BOTTOM_RIGHT'">
-        <div><div ng-include="'views/features/plasmatank.html'"></div></div>
-        <div><div ng-include="'views/features/electricgun.html'"></div></div>
-    </slick>
+    <div class="feature-pips-container">
+        <div ng-if="player.room == 'TOP_LEFT'">
+            <img src="/images/icon-gun.png" class="feature-pip">
+        </div>
+        <div ng-if="player.room == 'TOP_CENTER'">
+            <img src="/images/icon-helm.png" class="feature-pip">
+            <img src="/images/icon-gun.png" class="feature-pip">
+        </div>
+        <div ng-if="player.room == 'TOP_RIGHT'">
+            <img src="/images/icon-gun.png" class="feature-pip">
+        </div>
+        <div ng-if="player.room == 'BOTTOM_LEFT'">
+            <img src="/images/icon-plasma.png" class="feature-pip">
+            <img src="/images/icon-electric.png" class="feature-pip">
+        </div>
+        <div ng-if="player.room == 'BOTTOM_CENTER'">
+            <img src="/images/icon-reactor.png" class="feature-pip">
+            <img src="/images/icon-gun.png" class="feature-pip">
+        </div>
+        <div ng-if="player.room == 'BOTTOM_RIGHT'">
+            <img src="/images/icon-plasma.png" class="feature-pip">
+            <img src="/images/icon-electric.png" class="feature-pip">
+        </div>
+    </div>
 </div>

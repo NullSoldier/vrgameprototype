@@ -27,7 +27,8 @@
 
 .plasmatank .plasmatank-description {
     font-size: 20px;
-    padding-left: 20px;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 .plasmatank .plasmatank-description-icon {

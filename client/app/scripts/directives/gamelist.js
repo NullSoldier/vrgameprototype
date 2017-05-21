@@ -16,6 +16,7 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
             var socket = null;
 
             $scope.debug = false;
+            $scope.disableExtrapolation = false;
             $scope.room = 'TOP_LEFT';
             $scope.player = null;
             $scope.state = 'NOT_CONNECTED';
@@ -23,9 +24,52 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
             $scope.lastTurnAt = null;
 
             function getThreatOffsetY(threat) {
+                if($scope.disableExtrapolation)
+                    return 0;
+
                 var delta = (Date.now() - $scope.lastTurnAt) / $scope.turnLength;
                 var offset = (threat.speed * 20) * Math.min(delta, 1.0);
                 return Math.floor(offset) + 'px';
+            }
+
+            function getThreatOffsetX(threat) {
+                var track = _.find($scope.tracks, {vector: threat.track});
+                var progress = threat.distance / track.length;
+
+                var delta = (Date.now() - $scope.lastTurnAt) / $scope.turnLength;
+                var offset = (threat.speed / track.length) * Math.min(delta, 1.0);
+
+                // TODO: Cache... this is slow
+                var query = window.jQuery;
+                var shipWidth = query('.ship-room')[0].getBoundingClientRect().width * 2;
+
+                if($scope.disableExtrapolation)
+                    offset = 0;
+
+                return Math.max(Math.floor((progress - offset) * window.innerWidth) + shipWidth, shipWidth) + 'px';
+            }
+
+            function getThreatImageSrc(threat) {
+                if(threat.name === 'Destroyer')
+                    return 'images/enemy-destroyer.png'
+                if(threat.name === 'Pulse Ball')
+                    return 'images/enemy-pulseball.png'
+                if(threat.name === 'Amobea')
+                    return 'images/enemy-amobea.png'
+                if(threat.name === 'Fighter')
+                    return 'images/enemy-fighter.png'
+                if(threat.name === 'Cryoshield Fighter')
+                    return 'images/enemy-cryoshieldfighter.png'
+                if(threat.name === 'Fighter')
+                    return 'images/enemy-fighter.png'
+                if(threat.name === 'Stealth Fighter')
+                    return 'images/enemy-stealthfighter.png'
+                if(threat.name === 'Meteoroid')
+                    return 'images/enemy-meteroid.png'
+                if(threat.name === 'Dummy')
+                    return 'images/enemy-fighter.png'
+
+                return 'images/icon-gun.png'
             }
 
             function getRoomName(room) {
@@ -41,8 +85,12 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
             function shakeScreen() {
                 if($scope.debug)
                     return;
+
                 $scope.enableScreenShake = true;
                 $timeout(function() {$scope.enableScreenShake = false}, 200);
+
+                if(window.navigator.vibrate)
+                    window.navigator.vibrate([200, 100, 200]);
             }
 
             function connectToServer() {
@@ -60,9 +108,9 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
                 });
             }
 
-            function startGame() {
-                console.log('starting')
-                socket.emit('start', {});
+            function startGame(missionName) {
+                console.log(`starting mission: ${missionName}`)
+                socket.emit('start', {mission: missionName});
             }
 
             function movePlayer(room) {
@@ -131,7 +179,7 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
                 console.log('Joined', data);
 
                 if($scope.debug)
-                    $timeout(function() {$scope.startGame()});
+                    $timeout(function() {$scope.startGame('tutorial')});
             });
 
             socketOnApply('playerjoined', function(player) {
@@ -157,7 +205,9 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
             $scope.getThreatsAt = getThreatsAt;
             $scope.getCells = getCells;
             $scope.getThreatOffsetY = getThreatOffsetY;
+            $scope.getThreatOffsetX = getThreatOffsetX;
             $scope.getPowerPercent = getPowerPercent;
+            $scope.getThreatImageSrc = getThreatImageSrc;
             $scope.getRoomName = getRoomName;
             $scope.getProgressPercent = getProgressPercent;
             $scope.fireGun = fireGun;

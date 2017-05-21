@@ -1,24 +1,32 @@
-const VECTORS = require('./constants').VECTORS;
+const GameTimer = require('./gametimer');
+const VECTORS   = require('./constants').VECTORS;
+
+const SHOW_FIRE_TIME = 1000;
 
 class Threat {
 	constructor(game, track) {
 		this.id = game.generateId();
 		this.name = 'ENEMY';
 		this.game = game;
-		this.speed = 0;
 		this.defense = 0;
 		this.health = 0;
 		this.shields = 0;
 		this.track = track;
-		this.distance = track.length - 1;
+		this.distance = track.length;
 		this.triggers = [track.xPos, track.yPos, track.zPos];
 		this.ignoreDamage = false;
 		this.isVisible = true;
+		this.showFired = false;
+		this.showFiredTimer = null;
+		this.showFiredColor = 'purple';
 	}
 
 	attackCurrentZone(game, damage) {
 		game.ship.health[this.track.vector] -= damage;
 		game.onShipHit(this, damage);
+
+		this.showFired = true;
+		this.showFiredTimer = new GameTimer(SHOW_FIRE_TIME);
 	}
 
 	attackAllZones(game, damage) {
@@ -26,6 +34,9 @@ class Threat {
 		game.ship.health[VECTORS.CENTER] -= damage;
 		game.ship.health[VECTORS.RIGHT] -= damage;
 		game.onShipHit(this, damage);
+
+		this.showFired = true;
+		this.showFiredTimer = new GameTimer(SHOW_FIRE_TIME);
 	}
 
 	attackX(game) {
@@ -58,7 +69,7 @@ class Threat {
 	move() {
 		this.distance -= this.speed;
 
-		if(this.distance <= this.triggers[0]) {
+		while(this.distance <= this.triggers[0]) {
 			if(this.triggers[0] === this.track.xPos) this.attackX(this.game);
 			if(this.triggers[0] === this.track.yPos) this.attackY(this.game);
 			if(this.triggers[0] === this.track.zPos) this.attackZ(this.game);
@@ -66,18 +77,27 @@ class Threat {
 		}
 	}
 
+	update(deltaMs) {
+		if(this.showFiredTimer && this.showFiredTimer.update(deltaMs)) {
+			this.showFiredTimer = null;
+			this.showFired = false;
+		}
+	}
+
 	serialize() {
 		return {
-			id          : this.id,
-			name        : this.name,
-			health      : this.health,
-			speed       : this.speed,
-			shields     : this.shields,
-			track       : this.track.vector,
-			triggers    : this.triggers,
-			distance    : this.distance,
-			isVisible   : this.isVisible,
-			ignoreDamage: this.ignoreDamage
+			id            : this.id,
+			name          : this.name,
+			health        : this.health,
+			speed         : this.speed,
+			shields       : this.shields,
+			track         : this.track.vector,
+			triggers      : this.triggers,
+			distance      : this.distance,
+			isVisible     : this.isVisible,
+			ignoreDamage  : this.ignoreDamage,
+			showFired     : this.showFired,
+			showFiredColor: this.showFiredColor,
 		};
 	}
 }
@@ -85,10 +105,11 @@ class Threat {
 class Destroyer extends Threat {
 	constructor(game, track) {
 		super(game, track);
-		this.name = 'Destroyer#' + this.id;
+		this.name = 'Destroyer';
 		this.speed = 2;
 		this.health = 5;
 		this.shields = 2;
+		this.showFiredColor = 'red';
 	}
 
 	attackX(game) {this.attackCurrentZone(this.game, 1)}
@@ -107,10 +128,11 @@ class Destroyer extends Threat {
 class PulseBall extends Threat {
 	constructor(game, track) {
 		super(game, track);
-		this.name = 'Pulse Ball #' + this.id;
+		this.name = 'Pulse Ball';
 		this.speed = 2;
 		this.health = 5;
 		this.shields = 1;
+		this.showFiredColor = 'purple';
 	}
 
 	attackX(game) {this.attackAllZones(this.game, 1)}
@@ -121,10 +143,11 @@ class PulseBall extends Threat {
 class Fighter extends Threat {
 	constructor(game, track) {
 		super(game, track);
-		this.name = 'Fighter #' + this.id;
+		this.name = 'Fighter';
 		this.speed = 3;
 		this.health = 4;
 		this.shields = 2;
+		this.showFiredColor = 'yellow';
 	}
 
 	attackX(game) {this.attackCurrentZone(this.game, 1)}
@@ -135,10 +158,11 @@ class Fighter extends Threat {
 class Amobea extends Threat {
 	constructor(game, track) {
 		super(game, track);
-		this.name = 'Amobea #' + this.id;
+		this.name = 'Amobea';
 		this.speed = 2;
 		this.health = 8;
 		this.shields = 0;
+		this.showFiredColor = 'purple';
 	}
 
 	heal(amount, max) {
@@ -153,11 +177,12 @@ class Amobea extends Threat {
 class CryoshieldFighter extends Threat {
 	constructor(game, track) {
 		super(game, track);
-		this.name = 'Cryoshield Fighter #' + this.id;
+		this.name = 'Cryoshield Fighter';
 		this.speed = 3;
 		this.health = 4;
 		this.shields = 1;
 		this.ignoreDamage = true;
+		this.showFiredColor = 'blue';
 	}
 
 	onHit() {
@@ -173,12 +198,13 @@ class CryoshieldFighter extends Threat {
 class StealthFighter extends Threat {
 	constructor(game, track) {
 		super(game, track);
-		this.name = 'Stealth Fighter #' + this.id;
+		this.name = 'Stealth Fighter';
 		this.speed = 4;
 		this.health = 4;
 		this.shields = 2;
 		this.ignoreDamage = true;
 		this.isVisible = false;
+		this.showFiredColor = 'blue';
 	}
 
 	attackX(game) {
@@ -193,15 +219,30 @@ class StealthFighter extends Threat {
 class Meteoroid extends Threat {
 	constructor(game, track) {
 		super(game, track);
-		this.name = 'Meteoroid #' + this.id;
+		this.name = 'Meteoroid'
 		this.speed = 5;
 		this.health = 5;
 		this.shields = 0;
+		this.showFiredColor = 'transparent';
 	}
 
 	attackX(game) {}
 	attackY(game) {}
 	attackZ(game) {this.attackCurrentZone(this.game, 20)}
+}
+
+class Dummy extends Threat {
+	constructor(game, track) {
+		super(game, track);
+		this.name = 'Dummy';
+		this.speed = 2;
+		this.health = 1;
+		this.shields = 0;
+	}
+
+	attackX(game) {}
+	attackY(game) {}
+	attackZ(game) {}
 }
 
 module.exports = {
@@ -212,4 +253,5 @@ module.exports = {
 	Fighter          : Fighter,
 	PulseBall        : PulseBall,
 	Meteoroid        : Meteoroid,
+	Dummy            : Dummy,
 };

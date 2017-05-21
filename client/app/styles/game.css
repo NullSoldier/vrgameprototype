@@ -1,0 +1,47 @@
+.explosion-fail {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    z-index: 1000;
+}
+
+.explosion-fail.explosion-active {
+    opacity: 1;
+    width: 10px;
+    height: 10px;
+}
+
+.explosion-fail.explosion-1 {
+    transition: opacity 0.1s ease-out, width 2s ease-out, height 2s ease-out;
+    bottom: -40%;
+    left: -5%;
+    width: 200px;
+    height: 190px;
+}
+
+.explosion-fail.explosion-2 {
+    transition: opacity 0.5s ease-out, width 1s ease-out, height 1s ease-out;
+    top: 40%;
+    left: 30%;
+    width: 121px;
+    height: 104px;
+}
+
+.explosion-fail.explosion-3 {
+    transition: opacity 0.75s ease-out, width 2s ease-out, height 2s ease-out;
+    top: 10%;
+    left: 57%;
+    width: 221px;
+    height: 204px;
+}
+
+.explosion-fail.explosion-4 {
+    transition: opacity 1s ease-out, width 1s ease-out, height 1s ease-out;
+    top: 65%;
+    left: -16%;
+    width: 221px;
+    height: 204px;
+}

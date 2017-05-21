@@ -16,12 +16,20 @@ class Room {
 	serialize() {
 		return {};
 	}
+
+	load() {
+
+	}
 }
 
 class WeaponRoom extends Room {
 	constructor(game, ship, room, track) {
 		super(game, ship, room, track);
 		this.gun = new EnergyGun(ship, track);
+	}
+
+	load() {
+		this.gun.fuelsource = this.getBatteryRoom();
 	}
 
 	getBatteryRoom() {
@@ -36,7 +44,7 @@ class WeaponRoom extends Room {
 
 	tryAction(player, action) {
 		if(action.name === 'gun')
-			this.gun.trigger(this.getBatteryRoom());
+			this.gun.trigger();
 	}
 
 	serialize() {
@@ -53,6 +61,10 @@ class ReactorRoom extends Room {
 		this.cores = 3;
 		this.power = 4;
 		this.maxPower = 6;
+	}
+
+	load() {
+		this.gun.fuelsource = this;
 	}
 
 	consumePower(powerNeeded) {
@@ -72,7 +84,7 @@ class ReactorRoom extends Room {
 
 	tryAction(player, action) {
 		if(action.name === 'gun')
-			this.gun.trigger(this);
+			this.gun.trigger();
 		if(action.name === 'replenish')
 			this.replenishPower();
 	}

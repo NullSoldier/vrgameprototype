@@ -3,20 +3,14 @@ const GAME_STATE = require('./constants').GAME_STATE;
 const GameTimer  = require('./gametimer');
 const Log        = require('./log');
 const ROOMS      = require('./constants').ROOMS;
+const Missions   = require('./missions');
 const Ship       = require('./ship');
-const threats    = require('./threats');
 const Track      = require('./track');
 const VECTORS    = require('./constants').VECTORS;
 
 const TURN_LENGTH = 4000;
 const STATE_DELAY = 100;
-const WAIT_TO_END_DELAY = 5000;
-
-const trackConfigs = [
-	[17, 13, 06, 03],
-	[10, 08, 05, 01],
-	[15, 11, 04, 02],
-]
+const WAIT_TO_END_DELAY = 10000;
 
 class Game {
 	constructor(sockets) {
@@ -33,7 +27,9 @@ class Game {
 		this.goToState(GAME_STATE.WAITING);
 	}
 
-	start() {
+	start(missionName) {
+		this.log.write('Starting mission ' + missionName);
+		this.mission = new Missions[missionName](this);
 		this.goToState(GAME_STATE.PLAYING);
 	}
 
@@ -72,15 +68,7 @@ class Game {
 		this.lastId = 0;
 		this.threats = [];
 		this.playerActions = [];
-
-		var l = _.sample(trackConfigs);
-		var c = _.sample(trackConfigs);
-		var r = _.sample(trackConfigs);
-		
-		this.tracks = {};
-		this.tracks[VECTORS.LEFT] = new Track(this, VECTORS.LEFT, l[0], l[1], l[2], l[3]);
-		this.tracks[VECTORS.CENTER] = new Track(this, VECTORS.CENTER, c[0], c[1], c[2], c[3]);
-		this.tracks[VECTORS.RIGHT] = new Track(this, VECTORS.RIGHT, r[0], r[1], r[2], r[3]);
+		this.tracks = this.mission.getTracks();
 
 		// dependency on tracks
 		this.ship = new Ship(this);
@@ -100,6 +88,8 @@ class Game {
 			this.stateTimer.reset();
 			this.sendFullState();
 		}
+
+		this.threats.forEach(t => t.update(deltaMs));
 	}
 
 	FAIL_enter() {
@@ -135,16 +125,7 @@ class Game {
 
 		_.filter(this.threats, t => t.distance <= 0).forEach(t => this.surviveThreat(t));
 
-		if(this.turn === 1)
-			this.spawnThreat(VECTORS.LEFT);;
-		// if(this.turn === 3)
-		// 	this.spawnThreat(VECTORS.RIGHT);;
-		// if(this.turn === 6)
-		// 	this.spawnThreat(VECTORS.CENTER);
-		// if(this.turn === 7)
-		// 	this.spawnThreat(VECTORS.CENTER);;
-		if(this.turn === 7)
-			this.spawnThreat(VECTORS.LEFT);
+		this.mission.nextTurn(this.turn);
 	}
 
 	simulatePlayerActions() {
@@ -201,6 +182,7 @@ class Game {
 
 	killThreat(threat) {
 		this.log.write(`${threat.name} has been killed`);
+		this.mission.onThreatKilled(threat);
 		_.remove(this.threats, t => t === threat);
 	}
 
@@ -214,13 +196,6 @@ class Game {
 			this.ship.health[VECTORS.LEFT] <= 0 ||
 			this.ship.health[VECTORS.CENTER] <= 0 ||
 			this.ship.health[VECTORS.RIGHT] <= 0);
-	}
-
-	spawnThreat(vector) {
-		var threatClass = threats[_.sample(_.keys(threats))];
-		var threat = new threatClass(this, this.tracks[vector]);
-		this.log.write(`Threat ${threat.name} incoming at ` + vector);
-		this.threats.push(threat);
 	}
 
 	render(clear) {

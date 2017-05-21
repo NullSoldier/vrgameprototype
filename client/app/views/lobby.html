@@ -1,11 +1,26 @@
-<div style="font-size:32px;">
-    Players
+<div class="lobby-container" ng-init="startMissionName = 'tutorial'">
+    <b>Players</b>
     <ul>
         <li ng-repeat="p in players track by p.id">{{p.id}} <span ng-if="p.id === player.id">(ME)</span></li>
         <li>Waiting for players...</li>
     </ul>
 
+    <div class="btn-group" data-toggle="buttons">
+      <label ng-class="{active: startMissionName === 'tutorial'}" class="btn btn-primary active" ng-click="startMissionName = 'tutorial'"><input type="checkbox" checked autocomplete="off">Tutorial</label>
+      <label ng-class="{active: startMissionName === 'random'}" class="btn btn-primary" ng-click="startMissionName = 'random'"><input type="checkbox" autocomplete="off">Random</label>
+    </div>
+
+    <div>
+        <span ng-if="startMissionName === 'tutorial'">
+            Learn how the ship works, kill 3 Dummys.
+        </span>
+
+        <span ng-if="startMissionName === 'random'">
+            A very difficult randomly generated mission.
+        </span>
+    </div>
+
     <div style="margin-top:15px">
-        <button ng-click="startGame()">Start Game</button>
+        <button class="btn btn-primary" ng-click="startGame(startMissionName)">Start Game</button>
     </div>
 </div>
