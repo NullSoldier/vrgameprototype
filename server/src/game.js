@@ -139,12 +139,12 @@ class Game {
 			this.spawnThreat(VECTORS.LEFT);;
 		// if(this.turn === 3)
 		// 	this.spawnThreat(VECTORS.RIGHT);;
-		// if(this.turn === 4)
+		// if(this.turn === 6)
 		// 	this.spawnThreat(VECTORS.CENTER);
 		// if(this.turn === 7)
 		// 	this.spawnThreat(VECTORS.CENTER);;
-		// if(this.turn === 7)
-		// 	this.spawnThreat(VECTORS.LEFT);
+		if(this.turn === 7)
+			this.spawnThreat(VECTORS.LEFT);
 	}
 
 	simulatePlayerActions() {
