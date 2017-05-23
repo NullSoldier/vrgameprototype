@@ -119,7 +119,7 @@ class Level1 extends Mission {
 		if(turn === 6)
 			this.spawnThreat(threats.StealthFighter, VECTORS.LEFT);
 
-		this.checkWinAt(6);
+		this.checkWinAt(turn, 6);
 	}
 
 	getTracks() {
@@ -143,7 +143,7 @@ class Level2 extends Mission {
 		if(turn === 7)
 			this.spawnThreat(threats.StealthFighter, VECTORS.RIGHT);
 
-		this.checkWinAt(6);
+		this.checkWinAt(turn, 7);
 	}
 
 	getTracks() {
