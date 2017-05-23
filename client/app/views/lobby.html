@@ -7,12 +7,22 @@
 
     <div class="btn-group" data-toggle="buttons">
       <label ng-class="{active: startMissionName === 'tutorial'}" class="btn btn-primary active" ng-click="startMissionName = 'tutorial'"><input type="checkbox" checked autocomplete="off">Tutorial</label>
+      <label ng-class="{active: startMissionName === 'level1'}" class="btn btn-primary" ng-click="startMissionName = 'level1'"><input type="checkbox" autocomplete="off">Level 1</label>
+      <label ng-class="{active: startMissionName === 'level2'}" class="btn btn-primary" ng-click="startMissionName = 'level2'"><input type="checkbox" autocomplete="off">Level 2</label>
       <label ng-class="{active: startMissionName === 'random'}" class="btn btn-primary" ng-click="startMissionName = 'random'"><input type="checkbox" autocomplete="off">Random</label>
     </div>
 
     <div>
         <span ng-if="startMissionName === 'tutorial'">
             Learn how the ship works, kill 3 Dummys.
+        </span>
+
+        <span ng-if="startMissionName === 'level1'">
+            Out of the frying pan and into the fire.
+        </span>
+
+        <span ng-if="startMissionName === 'level2'">
+            How about a mission that's a little meteor?
         </span>
 
         <span ng-if="startMissionName === 'random'">

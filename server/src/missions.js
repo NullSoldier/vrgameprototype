@@ -36,6 +36,13 @@ class Mission {
 		return threat;
 	}
 
+	checkWinAt(turn, winAtTurn) {
+		if(turn >= winAtTurn && this.game.threats.length === 0) {
+			this.game.log.write('Players win the mission');
+			this.game.goToState(GAME_STATE.WAITING);
+		}
+	}
+
 	nextTurn(turn) {
 	}
 
@@ -95,7 +102,54 @@ class Tutorial extends Mission {
 		}
 	}
 
-	getTrackConfigs() {
+	getTracks() {
+		this.leftTrack = TRACK_CONFIGS.LONG;
+		this.centerTrack = TRACK_CONFIGS.LONG;
+		this.rightTrack = TRACK_CONFIGS.LONG;
+		return super.getTracks();
+	}
+}
+
+class Level1 extends Mission {
+	nextTurn(turn) {
+		if(turn === 2)
+			this.spawnThreat(threats.PulseBall, VECTORS.RIGHT);
+		if(turn === 4)
+			this.spawnThreat(threats.Destroyer, VECTORS.CENTER);
+		if(turn === 6)
+			this.spawnThreat(threats.StealthFighter, VECTORS.LEFT);
+
+		this.checkWinAt(6);
+	}
+
+	getTracks() {
+		this.leftTrack = TRACK_CONFIGS.LONG;
+		this.centerTrack = TRACK_CONFIGS.SHORT;
+		this.rightTrack = TRACK_CONFIGS.MEDIUM;
+		return super.getTracks();
+	}
+}
+
+class Level2 extends Mission {
+	nextTurn(turn) {
+		if(turn === 2)
+			this.spawnThreat(threats.Meteoroid, VECTORS.LEFT);
+		if(turn === 3)
+			this.spawnThreat(threats.Meteoroid, VECTORS.RIGHT);
+		if(turn === 4)
+			this.spawnThreat(threats.Meteoroid, VECTORS.CENTER);
+		if(turn === 6)
+			this.spawnThreat(threats.StealthFighter, VECTORS.LEFT);
+		if(turn === 7)
+			this.spawnThreat(threats.StealthFighter, VECTORS.RIGHT);
+
+		this.checkWinAt(6);
+	}
+
+	getTracks() {
+		this.leftTrack = TRACK_CONFIGS.MEDIUM;
+		this.centerTrack = TRACK_CONFIGS.MEDIUM;
+		this.rightTrack = TRACK_CONFIGS.SHORT;
 		return super.getTracks();
 	}
 }
@@ -126,4 +180,6 @@ class Random extends Mission {
 module.exports = {
 	tutorial: Tutorial,
 	random: Random,
+	level1: Level1,
+	level2: Level2,
 }

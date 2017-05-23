@@ -34,6 +34,8 @@ class Gun {
 	}
 
 	trigger() {
+		if(this.triggered)
+			return;
 		this.ship.triggeredGuns.push(this);
 		this.triggered = true;
 	}
@@ -64,7 +66,7 @@ class EnergyGun extends Gun {
 	constructor(ship, track) {
 		super(ship);
 		this.track = track;
-		this.damage = 5;
+		this.damage = 4;
 		this.range = 3;
 		this.fuelsource = null;
 	}
