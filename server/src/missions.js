@@ -84,12 +84,18 @@ class Tutorial extends Mission {
 	}
 
 	nextTurn(turn) {
-		if(turn === 1)
-			this.spawnThreat(threats.Dummy, VECTORS.CENTER);
-
 		if(turn === 1 || turn === this.lastSpawnedDummyTurn + this.dummyTurnDelay) {
 			this.spawnThreat(threats.Dummy, VECTORS.CENTER);
 			this.lastSpawnedDummyTurn = turn;
+		}
+
+		const noEnergyLeft = (
+			this.game.ship.rooms.BOTTOM_CENTER.cores === 0 &&
+			this.game.ship.rooms.BOTTOM_CENTER.power <= 1)
+
+		if(noEnergyLeft) {
+			this.game.log.write('Players lose because they ran out of energy');
+			this.game.goToState(GAME_STATE.WAITING);
 		}
 	}
 
