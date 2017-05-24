@@ -102,6 +102,7 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
                 return io.connect(socketUrl, {transports: ['websocket'], reconnection: true});
             }
 
+            $scope.state = 'CONNECTING';
             socket = connectToServer();
 
             function socketOnApply(event, fn) {
@@ -191,9 +192,8 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
             })
 
             socketOnApply('alreadyinprogress', function(data) {
-                $scope.state = 'REJECTED';
-                $scope.reason = 'Cannot join already in progress';
-                console.error('Rejected: ', $scope.reason);
+                $scope.reason = 'Cannot join a game that is already in progress';
+                socket.disconnect();
             });
 
             socketOnApply('joined', function(data) {

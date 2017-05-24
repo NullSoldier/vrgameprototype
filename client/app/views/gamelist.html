@@ -1,7 +1,7 @@
 <div class="play-container" ng-class="{'enable-screen-shake': enableScreenShake}">
-    <div ng-if="state === 'NOT_CONNECTED'">Connecting...</div>
-    <div ng-if="state === 'CONNECTED'">Joining</div>
-    <div ng-if="state === 'REJECTED'">Server rejected client: {{reason}}</div>
+    <div ng-if="state === 'CONNECTING'"><h2>Connecting...</h2></div>
+    <div ng-if="state === 'CONNECTED'"><h2>Joining</h2></div>
+    <div ng-if="state === 'NOT_CONNECTED'"><h2>Disconnected</h2><h3>{{reason}}</h3></div>
     <div ng-if="state === 'WAITING'" ng-include="'views/lobby.html'"></div>
     <div ng-if="state === 'PLAYING' || state === 'FAIL'" ng-include="'views/game.html'"></div>
 </div>

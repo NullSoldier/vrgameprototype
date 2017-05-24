@@ -53,8 +53,6 @@ class Server {
 			var player = this.game.getPlayer(socket.id);
 			if(player)
 				socketFn.call(this, socket, player, data);
-			else
-				socket.disconnect();
 		}).bind(this);
 	}
 
