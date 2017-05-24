@@ -22,6 +22,7 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
             $scope.state = 'NOT_CONNECTED';
             $scope.enableScreenShake = false;
             $scope.lastTurnAt = null;
+            $scope.selectedFeature = {};
 
             function getThreatOffsetY(threat) {
                 if($scope.disableExtrapolation)
@@ -150,6 +151,26 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
                 });
             }
 
+            function slickOnChange(event, slick, currentSlide, nextSlide) {
+                $scope.selectedFeature[slick.options.room] = currentSlide;
+            }
+
+            function slickOnInit (event, slick) {
+                if($scope.selectedFeature[slick.options.room])
+                    slick.slickGoTo($scope.selectedFeature[slick.options.room], true, true);
+            }
+
+            function slickConfig(room) {
+                return {
+                    infinite: false,
+                    arrows: false,
+                    dots: false,
+                    autoplay: false,
+                    room: room,
+                    event: {afterChange: slickOnChange, init: slickOnInit}
+                };
+            }
+
             socketOnApply('gamestate', function(data) {
                 if($scope.turn != data.turn)
                     $scope.lastTurnAt = Date.now();
@@ -214,6 +235,15 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
             $scope.fireGun = fireGun;
             $scope.replenish = replenish;
             $scope.JSON = JSON;
+
+            $scope.slickConfigs = {
+                TOP_LEFT     : slickConfig('TOP_LEFT'),
+                TOP_CENTER   : slickConfig('TOP_CENTER'),
+                TOP_RIGHT    : slickConfig('TOP_RIGHT'),
+                BOTTOM_LEFT  : slickConfig('BOTTOM_LEFT'),
+                BOTTOM_CENTER: slickConfig('BOTTOM_CENTER'),
+                BOTTOM_RIGHT : slickConfig('BOTTOM_RIGHT'),
+            }
         }
     }
 }]);
