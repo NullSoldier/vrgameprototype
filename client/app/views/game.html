@@ -66,30 +66,36 @@
     <div class="feature-slider-container">
         <slick class="slider slider-room single-item" infinite="false" arrows="false" ng-if="player.room == 'TOP_LEFT'">
             <div><div ng-include="'views/features/plasmagun.html'"></div></div>
+            <div ng-if="debug"><div ng-include="'views/features/debug.html'"></div></div>
         </slick>
 
         <slick class="slider slider-room single-item" infinite="false" arrows="false" ng-if="player.room == 'TOP_CENTER'">
             <div><div ng-include="'views/features/threatdetector.html'"></div></div>
             <div><div ng-include="'views/features/plasmagun.html'"></div></div>
+            <div ng-if="debug"><div ng-include="'views/features/debug.html'"></div></div>
         </slick>
 
         <slick class="slider slider-room single-item" infinite="false" arrows="false" ng-if="player.room == 'TOP_RIGHT'">
             <div><div ng-include="'views/features/plasmagun.html'"></div></div>
+            <div ng-if="debug"><div ng-include="'views/features/debug.html'"></div></div>
         </slick>
 
         <slick class="slider slider-room single-item" infinite="false" arrows="false" ng-if="player.room == 'BOTTOM_LEFT'">
             <div><div ng-include="'views/features/plasmatank.html'"></div></div>
             <div><div ng-include="'views/features/electricgun.html'"></div></div>
+            <div ng-if="debug"><div ng-include="'views/features/debug.html'"></div></div>
         </slick>
 
         <slick class="slider slider-room single-item" infinite="false" arrows="false" ng-if="player.room == 'BOTTOM_CENTER'">
             <div><div ng-include="'views/features/reactor.html'"></div></div>
             <div><div ng-include="'views/features/shortwavegun.html'"></div></div>
+            <div ng-if="debug"><div ng-include="'views/features/debug.html'"></div></div>
         </slick>
 
         <slick class="slider slider-room single-item" infinite="false" arrows="false" ng-if="player.room == 'BOTTOM_RIGHT'">
             <div><div ng-include="'views/features/plasmatank.html'"></div></div>
             <div><div ng-include="'views/features/electricgun.html'"></div></div>
+            <div ng-if="debug"><div ng-include="'views/features/debug.html'"></div></div>
         </slick>
     </div>
 

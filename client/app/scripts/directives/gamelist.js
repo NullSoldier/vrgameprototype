@@ -212,6 +212,7 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
             $scope.getProgressPercent = getProgressPercent;
             $scope.fireGun = fireGun;
             $scope.replenish = replenish;
+            $scope.JSON = JSON;
         }
     }
 }]);

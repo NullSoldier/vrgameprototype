@@ -126,21 +126,6 @@ class Game {
 		this.mission.nextTurn(this.turn);
 	}
 
-	simulatePlayerActions() {
-		// if(this.turn === 3)
-		// 	this.ship.rooms[ROOMS.BOTTOM_CENTER].fireGun();
-		// if(this.turn === 4)
-		// 	this.ship.rooms[ROOMS.BOTTOM_CENTER].fireGun();
-		// if(this.turn === 7)
-		// 	this.ship.rooms[ROOMS.TOP_LEFT].fireGun();
-		// if(this.turn === 7)
-		// 	this.ship.rooms[ROOMS.BOTTOM_CENTER].fireGun();
-		// if(this.turn === 8)
-		// 	this.ship.rooms[ROOMS.TOP_RIGHT].fireGun();
-		// if(this.turn === 10)
-		// 	this.ship.rooms[ROOMS.TOP_RIGHT].fireGun();
-	}
-
 	resolveGuns() {
 		if(this.ship.triggeredGuns.length < 0)
 			return;
