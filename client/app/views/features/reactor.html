@@ -17,7 +17,9 @@
 
     <button
         class="reactor-consume btn btn-success"
-        ng-click="replenish()">
-        Fill Reactor
+        ng-click="replenish()"
+        ng-disabled="ship.rooms[player.room].filling || !ship.rooms[player.room].canFill">
+        {{ ship.rooms[player.room].canFill ? ship.rooms[player.room].filling ? 'Filling' : 'Fill Reactor' : 'No More Cores'}}
+        <img class="reactor-fill-icon" ng-show="!ship.rooms[player.room].canFill" src="/images/icon-plasma.png">
     </button>
 </div>

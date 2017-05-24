@@ -90,6 +90,8 @@ class Server {
 			this.game.movePlayer(player, data.room);
 		else if(data.name === 'gun')
 			this.game.doAction(player, data);
+		else if(data.name === 'replenish')
+			this.game.doAction(player, data);
 		else
 			this.game.queueAction(player, data);
 	}

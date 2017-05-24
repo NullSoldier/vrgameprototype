@@ -76,7 +76,7 @@ class EnergyGun extends Gun {
 	}
 
 	canFire() {
-		return this.fuelsource.power >= 1;
+		return this.fuelsource.hasEnoughPower(1);
 	}
 
 	getTargets() {
@@ -95,6 +95,10 @@ class ShortRangeWave extends Gun {
 
 	resolve() {
 		return this.fuelsource.consumePower(1);
+	}
+
+	canFire() {
+		return this.fuelsource.hasEnoughPower(1);
 	}
 
 	getTargets() {

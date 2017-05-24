@@ -77,6 +77,10 @@ class Threat {
 		}
 	}
 
+	nextTurn(turn) {
+		this.move();
+	}
+
 	update(deltaMs) {
 		if(this.showFiredTimer && this.showFiredTimer.update(deltaMs)) {
 			this.showFiredTimer = null;

@@ -109,9 +109,9 @@ class Tutorial extends Mission {
 	}
 
 	getTracks() {
-		this.leftTrack = TRACK_CONFIGS.LONG;
+		this.leftTrack = TRACK_CONFIGS.SHORT;
 		this.centerTrack = TRACK_CONFIGS.LONG;
-		this.rightTrack = TRACK_CONFIGS.LONG;
+		this.rightTrack = TRACK_CONFIGS.SHORT;
 		return super.getTracks();
 	}
 }

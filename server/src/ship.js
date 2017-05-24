@@ -27,6 +27,11 @@ class Ship {
 			room.load();
 	}
 
+	nextTurn(turn) {
+		for(var room of _.values(this.rooms))
+			room.nextTurn(turn);
+	}
+
 	renderRoom(buffer, originX, originY, width, height) {
 		for(var i=0; i <= width - 1; ++i) {
 			buffer[originY][originX + i] = 'X';

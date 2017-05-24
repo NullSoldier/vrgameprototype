@@ -107,16 +107,14 @@ class Game {
 	nextTurn() {
 		this.turn++;
 
-		this.simulatePlayerActions();
-
 		while(this.playerActions.length) {
 			var action = this.playerActions.pop();
 			action();
 		}
 
+		this.ship.nextTurn(this.turn);
 		this.resolveGuns();
-
-		this.threats.forEach(t => t.move());
+		this.threats.forEach(t => t.nextTurn(this.turn));
 
 		if(this.isShipDead()) {
 			this.goToState(GAME_STATE.FAIL);

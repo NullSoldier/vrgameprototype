@@ -13,12 +13,14 @@ class Room {
 	tryAction(player, action, data) {
 	}
 
-	serialize() {
-		return {};
+	load() {
 	}
 
-	load() {
+	nextTurn(turn) {		
+	}
 
+	serialize() {
+		return null;
 	}
 }
 
@@ -61,10 +63,15 @@ class ReactorRoom extends Room {
 		this.cores = 3;
 		this.power = 4;
 		this.maxPower = 6;
+		this.filling = false;
 	}
 
 	load() {
 		this.gun.fuelsource = this;
+	}
+
+	hasEnoughPower(powerNeeded) {
+		return this.power >= powerNeeded;
 	}
 
 	consumePower(powerNeeded) {
@@ -75,18 +82,25 @@ class ReactorRoom extends Room {
 		return true;
 	}
 
-	replenishPower() {
-		if(this.cores <= 0)
-			return;
-		this.cores -= 1;
-		this.power = this.maxPower;
+	startFilling() {
+		this.filling = true;
+	}
+
+	nextTurn(turn) {
+		super.nextTurn(turn);
+
+		if(this.filling && this.cores > 0) {
+			this.cores -= 1;
+			this.power = this.maxPower;
+			this.filling = false;
+		}
 	}
 
 	tryAction(player, action) {
 		if(action.name === 'gun')
 			this.gun.trigger();
 		if(action.name === 'replenish')
-			this.replenishPower();
+			this.startFilling();
 	}
 
 	serialize() {
@@ -94,6 +108,8 @@ class ReactorRoom extends Room {
 			cores: this.cores,
 			power: this.power,
 			maxPower: this.maxPower,
+			filling: this.filling,
+			canFill: this.cores > 0,
 			gun: this.gun.serialize(),
 		}
 	}
@@ -105,6 +121,7 @@ class BatteryRoom extends Room {
 		this.gun = new ElectricGun(ship, track);
 		this.power = 2;
 		this.maxPower = 3;
+		this.filling = false;
 	}
 
 	consumePower(powerNeeded) {
@@ -115,20 +132,32 @@ class BatteryRoom extends Room {
 		return true;
 	}
 
+	hasEnoughPower(powerNeeded) {
+		return this.power >= powerNeeded;
+	}
+
 	getReactor() {
 		return this.ship.rooms[ROOMS.BOTTOM_CENTER];
 	}
 
-	replenishPower() {
-		if(this.getReactor().consumePower(this.maxPower))
+	startFilling() {
+		this.filling = true;
+	}
+
+	nextTurn(turn) {
+		super.nextTurn(turn);
+
+		if(this.filling && this.getReactor().consumePower(this.maxPower)) {
 			this.power = this.maxPower;
+			this.filling = false;
+		}
 	}
 
 	tryAction(player, action) {
 		if(action.name === 'gun')
 			this.gun.trigger();
 		if(action.name === 'replenish')
-			this.replenishPower();
+			this.startFilling();
 	}
 
 	serialize() {
@@ -136,6 +165,8 @@ class BatteryRoom extends Room {
 			power: this.power,
 			maxPower: this.maxPower,
 			gun: this.gun.serialize(),
+			filling: this.filling,
+			canFill: this.getReactor().hasEnoughPower(this.maxPower),
 		}
 	}
 }

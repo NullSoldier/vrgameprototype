@@ -9,6 +9,11 @@
     color: black;
 }
 
+.plasmatank .plasmatank-consume .plasmatank-fill-icon {
+    display: inline;
+    height: 30px;
+}
+
 .plasmatank .plasmatank-tank {
     margin-top: 10px;
     width: 190px;
