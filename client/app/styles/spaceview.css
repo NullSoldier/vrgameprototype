@@ -44,10 +44,10 @@
 .spaceview .threats .threat .threat-fire {
     height:4px;
     top: 50%;
-    left: -1500%;
+    left: -3000%;
     border-radius: 50%;
     z-index: 2;
-    width: 1500%;
+    width: 3000%;
     background-color: transparent;
     display: block;
     position: absolute;
