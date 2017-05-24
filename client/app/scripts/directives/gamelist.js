@@ -46,7 +46,8 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
                 if($scope.disableExtrapolation)
                     offset = 0;
 
-                return Math.max(Math.floor((progress - offset) * window.innerWidth) + shipWidth, shipWidth) + 'px';
+                var leftPosition = Math.floor((progress - offset) * window.innerWidth * 3) + shipWidth;
+                return Math.max(leftPosition, shipWidth) + 'px';
             }
 
             function getThreatImageSrc(threat) {
