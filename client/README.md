@@ -1,8 +1,18 @@
-Pacing of the enemies
-Have a burner on the back of the ship
-Add ship labels
-Add internal threats
-Add alert button
-Add ship roles to the lobby
-Add science station to show enemies
-Add research room
+Polish
+ * Have a burner on the back of the ship
+ * Add effects for when your ship is firing
+ * Add ship labels
+
+Quality of Life
+ * Add ship roles to the lobby
+
+Features
+ * Add internal threats
+  - Button masher
+  - Hit numbers in order
+  - Pin code that you can only get from helm computer
+ * Helm computer
+ * Add research room for modules
+  - get mone from enemies that you use to upgrade things at end of level or buy fuel cores
+ * Add science station
+  - Remove shield from enemy for one turn

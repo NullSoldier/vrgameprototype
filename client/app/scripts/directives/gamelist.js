@@ -22,7 +22,7 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
             $scope.state = 'NOT_CONNECTED';
             $scope.enableScreenShake = false;
             $scope.lastTurnAt = null;
-            $scope.selectedFeature = {};
+            $scope.selectedFeature = null;
 
             function getThreatOffsetY(threat) {
                 if($scope.disableExtrapolation)
@@ -93,6 +93,10 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
 
                 if(window.navigator.vibrate)
                     window.navigator.vibrate([200, 100, 200]);
+            }
+
+            function onGameStart() {
+                $scope.selectedFeature = {};
             }
 
             function connectToServer() {
@@ -175,6 +179,9 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
             socketOnApply('gamestate', function(data) {
                 if($scope.turn != data.turn)
                     $scope.lastTurnAt = Date.now();
+
+                if(data.state === 'PLAYING' && $scope.state != 'PLAYING')
+                    onGameStart();
 
                 $scope.turnLength = data.turnLength;
                 $scope.turn = data.turn;
