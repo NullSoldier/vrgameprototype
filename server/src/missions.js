@@ -1,5 +1,6 @@
 const _          = require('lodash');
 const GAME_STATE = require('./constants').GAME_STATE;
+const GameTimer  = require('./gametimer');
 const threats    = require('./threats');
 const Track      = require('./track');
 const VECTORS    = require('./constants').VECTORS;
@@ -8,6 +9,8 @@ const TRACK_CONFIGS = {
 	LONG: [17, 13, 06, 03],
 	MEDIUM: [15, 11, 04, 02],
 	SHORT: [10, 08, 05, 01],
+	TUTORIAL: [15, 15, 08, 04],
+	TUTORIAL_EMPTY: [17, 15, 08, 04],
 }
 
 class Mission {
@@ -43,7 +46,7 @@ class Mission {
 		}
 	}
 
-	nextTurn(turn) {
+	update(deltaMs) {
 	}
 
 	onThreatKilled(threat) {	
@@ -77,16 +80,15 @@ class Mission {
 class Tutorial extends Mission {
 	constructor(game) {
 		super(game);
-		this.lastSpawnedDummyTurn = 0;
-		this.dummyTurnDelay = 5;
+		this.spawnDummyTimer = new GameTimer(2000, true);
 		this.killCount = 0;
 		this.maxKillCount = 3;
 	}
 
-	nextTurn(turn) {
-		if(turn === 1 || turn === this.lastSpawnedDummyTurn + this.dummyTurnDelay) {
+	update(deltaMs) {
+		if(this.spawnDummyTimer.update(deltaMs)) {
+			this.spawnDummyTimer.reset();
 			this.spawnThreat(threats.Dummy, VECTORS.CENTER);
-			this.lastSpawnedDummyTurn = turn;
 		}
 
 		const noEnergyLeft = (
@@ -109,23 +111,23 @@ class Tutorial extends Mission {
 	}
 
 	getTracks() {
-		this.leftTrack = TRACK_CONFIGS.SHORT;
-		this.centerTrack = TRACK_CONFIGS.LONG;
-		this.rightTrack = TRACK_CONFIGS.SHORT;
+		this.leftTrack = TRACK_CONFIGS.TUTORIAL;
+		this.centerTrack = TRACK_CONFIGS.TUTORIAL;
+		this.rightTrack = TRACK_CONFIGS.TUTORIAL;
 		return super.getTracks();
 	}
 }
 
 class Level1 extends Mission {
-	nextTurn(turn) {
-		if(turn === 2)
-			this.spawnThreat(threats.PulseBall, VECTORS.RIGHT);
-		if(turn === 4)
-			this.spawnThreat(threats.Destroyer, VECTORS.CENTER);
-		if(turn === 6)
-			this.spawnThreat(threats.StealthFighter, VECTORS.LEFT);
+	update(deltaMs) {
+		// if(turn === 2)
+		// 	this.spawnThreat(threats.PulseBall, VECTORS.RIGHT);
+		// if(turn === 4)
+		// 	this.spawnThreat(threats.Destroyer, VECTORS.CENTER);
+		// if(turn === 6)
+		// 	this.spawnThreat(threats.StealthFighter, VECTORS.LEFT);
 
-		this.checkWinAt(turn, 6);
+		// this.checkWinAt(turn, 6);
 	}
 
 	getTracks() {
@@ -137,19 +139,19 @@ class Level1 extends Mission {
 }
 
 class Level2 extends Mission {
-	nextTurn(turn) {
-		if(turn === 2)
-			this.spawnThreat(threats.Meteoroid, VECTORS.LEFT);
-		if(turn === 3)
-			this.spawnThreat(threats.Meteoroid, VECTORS.RIGHT);
-		if(turn === 4)
-			this.spawnThreat(threats.Meteoroid, VECTORS.CENTER);
-		if(turn === 6)
-			this.spawnThreat(threats.StealthFighter, VECTORS.LEFT);
-		if(turn === 7)
-			this.spawnThreat(threats.StealthFighter, VECTORS.RIGHT);
+	update(deltaMs) {
+		// if(turn === 2)
+		// 	this.spawnThreat(threats.Meteoroid, VECTORS.LEFT);
+		// if(turn === 3)
+		// 	this.spawnThreat(threats.Meteoroid, VECTORS.RIGHT);
+		// if(turn === 4)
+		// 	this.spawnThreat(threats.Meteoroid, VECTORS.CENTER);
+		// if(turn === 6)
+		// 	this.spawnThreat(threats.StealthFighter, VECTORS.LEFT);
+		// if(turn === 7)
+		// 	this.spawnThreat(threats.StealthFighter, VECTORS.RIGHT);
 
-		this.checkWinAt(turn, 7);
+		// this.checkWinAt(turn, 7);
 	}
 
 	getTracks() {
@@ -161,17 +163,17 @@ class Level2 extends Mission {
 }
 
 class Random extends Mission {
-	nextTurn(turn) {
-		if(turn === 1)
-			this.spawnRandomThreatAt(VECTORS.LEFT);
-		if(turn === 3)
-			this.spawnRandomThreatAt(VECTORS.RIGHT);
-		if(turn === 6)
-			this.spawnRandomThreatAt(VECTORS.CENTER);
-		if(turn === 7)
-			this.spawnRandomThreatAt(VECTORS.CENTER);
-		if(turn === 7)
-			this.spawnRandomThreatAt(VECTORS.LEFT);
+	update(deltaMs) {
+		// if(turn === 1)
+		// 	this.spawnRandomThreatAt(VECTORS.LEFT);
+		// if(turn === 3)
+		// 	this.spawnRandomThreatAt(VECTORS.RIGHT);
+		// if(turn === 6)
+		// 	this.spawnRandomThreatAt(VECTORS.CENTER);
+		// if(turn === 7)
+		// 	this.spawnRandomThreatAt(VECTORS.CENTER);
+		// if(turn === 7)
+		// 	this.spawnRandomThreatAt(VECTORS.LEFT);
 	}
 
 	getTrackConfigs() {

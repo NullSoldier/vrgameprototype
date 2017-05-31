@@ -16,62 +16,55 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
             var socket = null;
 
             $scope.debug = false;
-            $scope.disableExtrapolation = false;
             $scope.room = 'TOP_LEFT';
             $scope.player = null;
             $scope.state = 'NOT_CONNECTED';
             $scope.enableScreenShake = false;
-            $scope.lastTurnAt = null;
-            $scope.selectedFeature = null;
+
+            var disableExtrapolation = false;
+            var selectedFeature = null;
+            var lastTickAt = null;
+            var tickLength = null;
+
+            function lerp(min, max, amount) {
+                return min + ((max - min) * amount);
+            }
 
             function getThreatOffsetY(threat) {
-                if($scope.disableExtrapolation)
-                    return 0;
+                var distance = threat.distance;
 
-                var delta = (Date.now() - $scope.lastTurnAt) / $scope.turnLength;
-                var offset = (threat.speed * 20) * Math.min(delta, 1.0);
-                return Math.floor(offset) + 'px';
+                if(!disableExtrapolation)
+                    distance -= threat.speed * ((Date.now() - lastTickAt) / tickLength);
+
+                const THREAT_DETECTOR_CELL_HEIGHT = 17;
+                return distance * THREAT_DETECTOR_CELL_HEIGHT + 'px';
             }
 
             function getThreatOffsetX(threat) {
                 var track = _.find($scope.tracks, {vector: threat.track});
-                var progress = threat.distance / track.length;
+                var distance = threat.distance;
 
-                var delta = (Date.now() - $scope.lastTurnAt) / $scope.turnLength;
-                var offset = (threat.speed / track.length) * Math.min(delta, 1.0);
+                if(!disableExtrapolation)
+                    distance -= threat.speed * ((Date.now() - lastTickAt) / tickLength);
 
-                // TODO: Cache... this is slow
-                var query = window.jQuery;
-                var shipWidth = query('.ship-room')[0].getBoundingClientRect().width * 2;
+                let progress = Math.max(distance / track.length, 0);
 
-                if($scope.disableExtrapolation)
-                    offset = 0;
-
-                var leftPosition = Math.floor((progress - offset) * window.innerWidth * 3) + shipWidth;
-                return Math.max(leftPosition, shipWidth) + 'px';
+                const SHIP_WIDTH = window.jQuery('.ship-room')[0].getBoundingClientRect().width * 2;
+                return lerp(SHIP_WIDTH, window.innerWidth * 3, progress);
             }
 
             function getThreatImageSrc(threat) {
-                if(threat.name === 'Destroyer')
-                    return 'images/enemy-destroyer.png'
-                if(threat.name === 'Pulse Ball')
-                    return 'images/enemy-pulseball.png'
-                if(threat.name === 'Amobea')
-                    return 'images/enemy-amobea.png'
-                if(threat.name === 'Fighter')
-                    return 'images/enemy-fighter.png'
-                if(threat.name === 'Cryoshield Fighter')
-                    return 'images/enemy-cryoshieldfighter.png'
-                if(threat.name === 'Fighter')
-                    return 'images/enemy-fighter.png'
-                if(threat.name === 'Stealth Fighter')
-                    return 'images/enemy-stealthfighter.png'
-                if(threat.name === 'Meteoroid')
-                    return 'images/enemy-meteroid.png'
-                if(threat.name === 'Dummy')
-                    return 'images/enemy-fighter.png'
-
-                return 'images/icon-gun.png'
+                return {
+                    'Destroyer'         : 'images/enemy-destroyer.png',
+                    'Pulse Ball'        : 'images/enemy-pulseball.png',
+                    'Amobea'            : 'images/enemy-amobea.png',
+                    'Fighter'           : 'images/enemy-fighter.png',
+                    'Cryoshield Fighter': 'images/enemy-cryoshieldfighter.png',
+                    'Fighter'           : 'images/enemy-fighter.png',
+                    'Stealth Fighter'   : 'images/enemy-stealthfighter.png',
+                    'Meteoroid'         : 'images/enemy-meteroid.png',
+                    'Dummy'             : 'images/enemy-fighter.png',
+                }[threat.name] || 'images/icon-gun.png'
             }
 
             function getRoomName(room) {
@@ -96,7 +89,7 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
             }
 
             function onGameStart() {
-                $scope.selectedFeature = {};
+                selectedFeature = {};
             }
 
             function connectToServer() {
@@ -150,19 +143,17 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
                 return (turn / 10) * 100 + '%';
             }
 
-            function getThreatsAt(vector, distance) {
-                return _.filter($scope.threats, function(t) {
-                    return t.track === vector && t.distance === distance && t.isVisible;
-                });
+            function getThreatsOn(vector) {
+                return _.filter($scope.threats, function(t) {return t.track === vector && t.isVisible});
             }
 
             function slickOnChange(event, slick, currentSlide, nextSlide) {
-                $scope.selectedFeature[slick.options.room] = currentSlide;
+                selectedFeature[slick.options.room] = currentSlide;
             }
 
             function slickOnInit (event, slick) {
-                if($scope.selectedFeature[slick.options.room])
-                    slick.slickGoTo($scope.selectedFeature[slick.options.room], true, true);
+                if(selectedFeature[slick.options.room])
+                    slick.slickGoTo(selectedFeature[slick.options.room], true, true);
             }
 
             function slickConfig(room) {
@@ -177,13 +168,11 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
             }
 
             socketOnApply('gamestate', function(data) {
-                if($scope.turn != data.turn)
-                    $scope.lastTurnAt = Date.now();
+                var lastState = $scope.state;
 
-                if(data.state === 'PLAYING' && $scope.state != 'PLAYING')
-                    onGameStart();
+                lastTickAt = Date.now();
+                tickLength = data.tickLength;
 
-                $scope.turnLength = data.turnLength;
                 $scope.turn = data.turn;
                 $scope.state = data.state;
                 $scope.players = data.players;
@@ -192,6 +181,9 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
                 $scope.threats = data.threats;
                 $scope.ship = data.ship;
                 $scope.player = _.find(data.players, ['id', $scope.player.id]) || $scope.player;
+
+                if(data.state === 'PLAYING' && lastState != 'PLAYING')
+                    onGameStart();
             });
 
             socketOnApply('shiphit', function(data) {
@@ -231,7 +223,7 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
 
             $scope.startGame = startGame;
             $scope.movePlayer = movePlayer;
-            $scope.getThreatsAt = getThreatsAt;
+            $scope.getThreatsOn = getThreatsOn;
             $scope.getCells = getCells;
             $scope.getThreatOffsetY = getThreatOffsetY;
             $scope.getThreatOffsetX = getThreatOffsetX;

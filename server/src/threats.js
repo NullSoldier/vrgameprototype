@@ -10,10 +10,12 @@ class Threat {
 		this.game = game;
 		this.defense = 0;
 		this.health = 0;
-		this.shields = 0;
+		this.shields = this.maxShields = 0;
+		this.maxFields = 0;
 		this.track = track;
 		this.distance = track.length;
-		this.triggers = [track.xPos, track.yPos, track.zPos];
+		this.triggers = [track.xPos, track.yPos, track.zPos]
+		this.shieldTimer = new GameTimer(1500);
 		this.ignoreDamage = false;
 		this.isVisible = true;
 		this.showFired = false;
@@ -66,25 +68,28 @@ class Threat {
 		return '';
 	}
 
-	move() {
-		this.distance -= this.speed;
+	update(deltaMs) {
+		this.move(deltaMs);
+
+		if(this.shields < this.maxShields && this.shieldTimer.update(deltaMs)) {
+			this.shields = this.maxShields;
+			this.shieldTimer.reset();
+		}
+
+		if(this.showFiredTimer && this.showFiredTimer.update(deltaMs)) {
+			this.showFiredTimer = null;
+			this.showFired = false;
+		}
+	}
+
+	move(deltaMs) {
+		this.distance -= this.speed * deltaMs;
 
 		while(this.distance <= this.triggers[0]) {
 			if(this.triggers[0] === this.track.xPos) this.attackX(this.game);
 			if(this.triggers[0] === this.track.yPos) this.attackY(this.game);
 			if(this.triggers[0] === this.track.zPos) this.attackZ(this.game);
 			this.triggers.shift();
-		}
-	}
-
-	nextTurn(turn) {
-		this.move();
-	}
-
-	update(deltaMs) {
-		if(this.showFiredTimer && this.showFiredTimer.update(deltaMs)) {
-			this.showFiredTimer = null;
-			this.showFired = false;
 		}
 	}
 
@@ -95,9 +100,10 @@ class Threat {
 			health        : this.health,
 			speed         : this.speed,
 			shields       : this.shields,
+			maxShields    : this.maxShields,
 			track         : this.track.vector,
 			triggers      : this.triggers,
-			distance      : this.distance,
+			distance      : Number(this.distance.toFixed(2)),
 			isVisible     : this.isVisible,
 			ignoreDamage  : this.ignoreDamage,
 			showFired     : this.showFired,
@@ -110,9 +116,9 @@ class Destroyer extends Threat {
 	constructor(game, track) {
 		super(game, track);
 		this.name = 'Destroyer';
-		this.speed = 2;
+		this.speed = 0.008;
 		this.health = 5;
-		this.shields = 2;
+		this.shields = this.maxShields = 2;
 		this.showFiredColor = 'red';
 	}
 
@@ -133,9 +139,9 @@ class PulseBall extends Threat {
 	constructor(game, track) {
 		super(game, track);
 		this.name = 'Pulse Ball';
-		this.speed = 2;
+		this.speed = 0.008;
 		this.health = 5;
-		this.shields = 1;
+		this.shields = this.maxShields = 1;
 		this.showFiredColor = 'purple';
 	}
 
@@ -148,9 +154,9 @@ class Fighter extends Threat {
 	constructor(game, track) {
 		super(game, track);
 		this.name = 'Fighter';
-		this.speed = 3;
+		this.speed = 0.012;
 		this.health = 4;
-		this.shields = 2;
+		this.shields = this.maxShields = 2;
 		this.showFiredColor = 'yellow';
 	}
 
@@ -163,9 +169,9 @@ class Amobea extends Threat {
 	constructor(game, track) {
 		super(game, track);
 		this.name = 'Amobea';
-		this.speed = 2;
+		this.speed = 0.008;
 		this.health = 8;
-		this.shields = 0;
+		this.shields = this.maxShields = 0;
 		this.showFiredColor = 'purple';
 	}
 
@@ -182,9 +188,9 @@ class CryoshieldFighter extends Threat {
 	constructor(game, track) {
 		super(game, track);
 		this.name = 'Cryoshield Fighter';
-		this.speed = 3;
+		this.speed = 0.012;
 		this.health = 4;
-		this.shields = 1;
+		this.shields = this.maxShields = 1;
 		this.ignoreDamage = true;
 		this.showFiredColor = 'blue';
 	}
@@ -203,9 +209,9 @@ class StealthFighter extends Threat {
 	constructor(game, track) {
 		super(game, track);
 		this.name = 'Stealth Fighter';
-		this.speed = 4;
+		this.speed = 0.016;
 		this.health = 4;
-		this.shields = 2;
+		this.shields = this.maxShields = 2;
 		this.ignoreDamage = true;
 		this.isVisible = false;
 		this.showFiredColor = 'blue';
@@ -224,9 +230,9 @@ class Meteoroid extends Threat {
 	constructor(game, track) {
 		super(game, track);
 		this.name = 'Meteoroid'
-		this.speed = 5;
+		this.speed = 0.02;
 		this.health = 5;
-		this.shields = 0;
+		this.shields = this.maxShields = 0;
 		this.showFiredColor = 'transparent';
 	}
 
@@ -239,9 +245,9 @@ class Dummy extends Threat {
 	constructor(game, track) {
 		super(game, track);
 		this.name = 'Dummy';
-		this.speed = 2;
+		this.speed = 0.0008;
 		this.health = 1;
-		this.shields = 0;
+		this.shields = this.maxShields = 0;
 	}
 
 	attackX(game) {}

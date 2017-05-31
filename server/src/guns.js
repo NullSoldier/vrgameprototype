@@ -1,11 +1,13 @@
-const _       = require('lodash');
-const VECTORS = require('./constants').VECTORS;
+const _         = require('lodash');
+const VECTORS   = require('./constants').VECTORS;
+const GameTimer = require('./gametimer');
 
 class Gun {
 
 	constructor(ship) {
 		this.ship = ship;
 		this.triggered = false;
+		this.triggerTimer = new GameTimer(140);
 		this.damage = 0;
 		this.range = 0; // number of sectors
 	}
@@ -25,18 +27,14 @@ class Gun {
 		if(!track)
 			throw 'Track not provided';
 
-		for(var i=0; i <= this.getTargetRange(track); i++) {
-			var target = track.getThreatAt(i);
-			if(target)
-				return target;
-		}
-		return null;
+		var range = this.getTargetRange(track);
+		var threats = track.getThreatsWithin(range);
+		return _.first(threats);
 	}
 
 	trigger() {
 		if(this.triggered)
 			return;
-		this.ship.triggeredGuns.push(this);
 		this.triggered = true;
 	}
 
@@ -44,8 +42,14 @@ class Gun {
 		return true;
 	}
 
+	update(deltaMs) {
+		if(this.triggered && this.triggerTimer.update(deltaMs))
+			this.ship.triggeredGuns.push(this);
+	}
+
 	reset() {
 		this.triggered = false;
+		this.triggerTimer.reset();
 	}
 
 	canFire() {

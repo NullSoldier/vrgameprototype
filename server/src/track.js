@@ -10,18 +10,15 @@ class Track {
 		this.zPos = zPos;
 	}
 
-	getThreatAt(distance) {
-		return _.find(this.game.threats, t => t.track === this && t.distance === distance);
+	getThreatsWithin(distance) {
+		return _.filter(this.game.threats, t => t.track === this && t.distance <= distance);
 	}
 
 	render() {
 		var result = `${this.vector}:\t`;
 
 		for(var i=0; i < this.length; i++) {
-			var ship = this.getThreatAt(i);
-
-			if(ship) result += ship.render();
-			else if(i == this.xPos) result += 'X';
+			if(i == this.xPos) result += 'X';
 			else if(i == this.yPos) result += 'Y';
 			else if(i == this.zPos) result += 'Z';
 			else result += '-';

@@ -8,13 +8,13 @@ const Ship       = require('./ship');
 const Track      = require('./track');
 const VECTORS    = require('./constants').VECTORS;
 
-const TURN_LENGTH = 4000;
+const TICK_LENGTH = 16;
 const STATE_DELAY = 100;
 const WAIT_TO_END_DELAY = 10000;
 
 class Game {
 	constructor(sockets) {
-		this.turnTimer = new GameTimer(TURN_LENGTH);
+		this.tickTimer = new GameTimer(TICK_LENGTH);
 		this.stateTimer = new GameTimer(STATE_DELAY);
 		this.failTimer = new GameTimer(WAIT_TO_END_DELAY);
 		this.state = null;
@@ -64,7 +64,7 @@ class Game {
 	PLAYING_enter() {
 		this.log.write('Starting the game...');
 
-		this.turn = 0;
+		this.tick = 0;
 		this.lastId = 0;
 		this.threats = [];
 		this.playerActions = [];
@@ -78,10 +78,11 @@ class Game {
 	}
 
 	PLAYING_update(deltaMs) {
-		if(this.turnTimer.update(deltaMs)) {
-			this.turnTimer.reset();
-			this.nextTurn();
+		if(this.tickTimer.update(deltaMs)) {
+			this.tickTimer.reset();
+			this.updateGameState(deltaMs);
 			this.sendFullState();
+			this.stateTimer.reset()
 		}
 
 		if(this.stateTimer.update(deltaMs)) {
@@ -104,26 +105,28 @@ class Game {
 		}
 	}
 
-	nextTurn() {
-		this.turn++;
+	updateGameState(deltaMs) {
+		this.tick++;
 
 		while(this.playerActions.length) {
 			var action = this.playerActions.pop();
 			action();
 		}
 
-		this.ship.nextTurn(this.turn);
+		this.ship.update(deltaMs);
 		this.resolveGuns();
-		this.threats.forEach(t => t.nextTurn(this.turn));
+		this.threats.forEach(t => t.update(deltaMs));
 
 		if(this.isShipDead()) {
 			this.goToState(GAME_STATE.FAIL);
 			return;
 		}
 
-		_.filter(this.threats, t => t.distance <= 0).forEach(t => this.surviveThreat(t));
+		for(var threat of this.threats)
+			if(threat.distance <= 0)
+				this.surviveThreat(threat);
 
-		this.mission.nextTurn(this.turn);
+		this.mission.update(deltaMs);
 	}
 
 	resolveGuns() {
@@ -151,8 +154,14 @@ class Game {
 			var amount = totals[threatId].value;
 
 			if(!threat.ignoreDamage) {
-				amount -= threat.shields;
-				threat.health -= amount;
+				if(threat.shields >= amount) {
+					threat.shields -= amount;
+					amount = 0;
+				} else {
+					amount -= threat.shields;
+					threat.shields = 0;
+					threat.health -= amount;
+				}
 				this.log.write(`${amount} damage done to ${threat.name}`)
 			}
 
@@ -189,7 +198,7 @@ class Game {
 				buffer.push(threat.renderStats() + '\n' + threat.renderAttacks() + '\n');
 			}
 
-			buffer.push(`Tick ${this.turn}`);
+			buffer.push(`Tick ${this.tick}`);
 			buffer.push(this.tracks[VECTORS.LEFT].render());
 			buffer.push(this.tracks[VECTORS.CENTER].render());
 			buffer.push(this.tracks[VECTORS.RIGHT].render());
@@ -257,8 +266,8 @@ class Game {
 	sendFullState() {
 		if(this.state === GAME_STATE.PLAYING || this.state === GAME_STATE.FAIL)
 			this.sockets.emit('gamestate', {
-				turnLength: TURN_LENGTH,
-				turn      : this.turn,
+				tickLength: TICK_LENGTH,
+				tick      : this.tick,
 				state     : this.state,
 				ship      : this.ship.serialize(),
 				players   : _.map(this.players, p => p.serialize()),

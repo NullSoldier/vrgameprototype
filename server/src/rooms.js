@@ -16,7 +16,7 @@ class Room {
 	load() {
 	}
 
-	nextTurn(turn) {		
+	update(deltaMs) {		
 	}
 
 	serialize() {
@@ -32,6 +32,11 @@ class WeaponRoom extends Room {
 
 	load() {
 		this.gun.fuelsource = this.getBatteryRoom();
+	}
+
+	update(deltaMs) {
+		super.update(deltaMs);
+		this.gun.update(deltaMs);
 	}
 
 	getBatteryRoom() {
@@ -86,8 +91,9 @@ class ReactorRoom extends Room {
 		this.filling = true;
 	}
 
-	nextTurn(turn) {
-		super.nextTurn(turn);
+	update(deltaMs) {
+		super.update(deltaMs);
+		this.gun.update(deltaMs);
 
 		if(this.filling && this.cores > 0) {
 			this.cores -= 1;
@@ -144,8 +150,9 @@ class BatteryRoom extends Room {
 		this.filling = true;
 	}
 
-	nextTurn(turn) {
-		super.nextTurn(turn);
+	update(deltaMs) {
+		super.update(deltaMs);
+		this.gun.update(deltaMs);
 
 		if(this.filling && this.getReactor().consumePower(this.maxPower)) {
 			this.power = this.maxPower;

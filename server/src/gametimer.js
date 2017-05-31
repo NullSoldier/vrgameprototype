@@ -1,7 +1,10 @@
 class GameTimer {
-	 constructor(waitForTime) {
+	 constructor(waitForTime, startTriggered) {
 	 	this.time = 0;
 	 	this.waitForTime = waitForTime;
+
+	 	if(startTriggered)
+	 		this.time = waitForTime
 	}
 
 	isElapsed() {

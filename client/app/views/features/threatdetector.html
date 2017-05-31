@@ -6,28 +6,39 @@
 
     <table>
         <tr>
-            <td valign="bottom" ng-repeat="track in tracks track by track.vector">
-                <table class="track">
-                    <tr
-                        ng-repeat="cell in getCells(track) track by $index"
-                        ng-class="{
-                            trackz: (track.length) - $index <= track.zPos,
-                            tracky: (track.length) - $index <= track.yPos && (track.length-1) - $index >= track.zPos,
-                            trackx: (track.length) - $index <= track.xPos && (track.length-1) - $index >= track.yPos,
-                            notrack: (track.length) - $index > track.xPos}">
-                        <td>
-                            &nbsp;<span
-                                class="track-threat"
-                                ng-style="{'top': getThreatOffsetY(threat)}"
-                                ng-repeat="threat in getThreatsAt(track.vector, track.length - $index) track by threat.id">
-                                {{threat.name}}
-                            </span>
-                        </td>
-                    </tr>
+            <td class="track" valign="bottom" ng-repeat="track in tracks track by track.vector">
+                <div class="notrack" ng-style="{height: (track.length - track.xPos) * 17}"></div>
+                <div class="trackx" ng-style="{height: (track.xPos - track.yPos) * 17}"></div>
+                <div class="tracky" ng-style="{height: (track.yPos - track.zPos) * 17}"></div>
+                <div class="trackz" ng-style="{height: track.zPos * 17}"></div>
 
-                    <tr><td>{{track.vector}}, {{ship.health[track.vector]}}</td></tr>
-                </table>
+                <span
+                    class="track-enemy"
+                    ng-style="{'bottom': getThreatOffsetY(threat)}"
+                    ng-repeat="threat in getThreatsOn(track.vector) track by threat.id">
+                    {{threat.name}}
+                </span>
             </td>
+        </tr>
+
+        <tr class="threatdetector-stats">
+            <td>TOP, {{ship.health.LEFT}}</td>
+            <td>MIDDLE, {{ship.health.CENTER}}</td>
+            <td>BOTTOM, {{ship.health.RIGHT}}</td>
         </tr>
     </table>
 </div>
+
+
+
+<!-- <tr
+    ng-repeat="cell in getCells(track) track by $index"
+    ng-class="{
+        trackz: (track.length) - $index <= track.zPos,
+        tracky: (track.length) - $index <= track.yPos && (track.length-1) - $index >= track.zPos,
+        trackx: (track.length) - $index <= track.xPos && (track.length-1) - $index >= track.yPos,
+        notrack: (track.length) - $index > track.xPos}">
+    <td>
+        &nbsp;
+    </td>
+</tr> -->

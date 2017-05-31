@@ -27,9 +27,9 @@ class Ship {
 			room.load();
 	}
 
-	nextTurn(turn) {
+	update(deltaMs) {
 		for(var room of _.values(this.rooms))
-			room.nextTurn(turn);
+			room.update(deltaMs);
 	}
 
 	renderRoom(buffer, originX, originY, width, height) {

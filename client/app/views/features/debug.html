@@ -1,11 +1,12 @@
 <div class="feature debug" ng-if="debug">
     <div class="feature-title">Debug {{turn}}</div>
     <div>
-        <pre style="height:300px">{{JSON.stringify(ship, null, 4)}}</pre>
+        <pre style="height:300px">
+            <!-- {{JSON.stringify(ship, null, 4)}} -->
+            <!-- {{JSON.stringify(threats, null, 4)}} -->
+            <!-- {{JSON.stringify(tracks, null, 4)}} -->
+            <!-- {{JSON.stringify(player, null, 4)}} -->
+            <!-- {{ threats[0].shields }} / {{ threats[0].maxShields }} -->
+        </pre>
     </div>
-
-    <!-- <b>State:</b> {{state}}<br/> -->
-    <!-- <b>Player:</b> {{player}}<br/> -->
-    <!-- <b>Tracks:</b> {{tracks}}<br/> -->
-    <!-- <b>Threats:</b> {{threats}}<br/> -->
 </div>

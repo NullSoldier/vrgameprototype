@@ -1,51 +1,59 @@
-.threatdetector table.track {
+.threatdetector table {
+    width: 100%;
+}
+
+.threatdetector .track {
     border: none;
+    width: 33%;
+    position: relative;
+    text-align: center;
+}
+
+.threatdetector .track .notrack,
+.threatdetector .track .trackx,
+.threatdetector .track .tracky,
+.threatdetector .track .trackz {
     width: 90%;
+    display: block;
     margin-left: auto;
     margin-right: auto;
     border-collapse: collapse;
 }
 
-.threatdetector table.track .track-threat {
+.threatdetector .track .notrack {
+    background-color: #A3FEBA;
+}
+
+.threatdetector .track .trackx {
+    background-color: #FFFF99;
+}
+
+.threatdetector .track .tracky {
+    background-color: #FFB347;
+}
+
+.threatdetector .track .trackz {
+    background-color: #FF7575;
+}
+
+.threatdetector .track .notrack + .trackx,
+.threatdetector .track .trackx + .tracky,
+.threatdetector .track .tracky + .trackz {
+    border-top: 1px dashed rgba(20, 20, 20, 0.25);
+}
+
+.threatdetector .threatdetector-stats {
+    text-align: center;
+}
+
+.threatdetector .track .track-enemy {
     width: 100%;
     position: absolute;
-    top: 0;
+    bottom: 0;
     left: 0;
     color: black;
     transition: top 0.1s linear;
     z-index: 100;
-}
-
-.threatdetector table.track tr {
-    border: none;
+    font-size: 17px;
     line-height: 17px;
-}
-
-.threatdetector table.track td {
-    border: none;
-    text-align: center;
-    width: 175px;
-    position: relative;
-}
-
-.threatdetector table.track tr.notrack td {
-    background-color: #A3FEBA;
-}
-
-.threatdetector table.track tr.trackx td {
-    background-color: #FFFF99;
-}
-
-.threatdetector table.track tr.tracky td {
-    background-color: #FFB347;
-}
-
-.threatdetector table.track tr.trackz td {
-    background-color: #FF7575;
-}
-
-.threatdetector table.track tr.notrack + tr.trackx,
-.threatdetector table.track tr.trackx + tr.tracky,
-.threatdetector table.track tr.tracky + tr.trackz {
-    border-top: 1px dashed rgba(20, 20, 20, 0.25);
 }
