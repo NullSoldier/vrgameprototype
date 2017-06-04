@@ -1,10 +1,10 @@
 var app = angular.module('vrApp');
 
-app.directive('game', ['$routeParams', 'Api', function ($routeParams, Api) {
+app.directive('gameList', ['$routeParams', function ($routeParams) {
     return {
         restrict: 'E',
-        templateUrl: 'views/game.html',
-        controllerAs: 'gameCtrl',
+        templateUrl: 'gamelist/gamelist.html',
+        controllerAs: 'gameListCtrl',
         scope: {},
         bindToController: {},
 

@@ -8,23 +8,35 @@
 
   <title>Just Stay Alive</title>
 
-  <link rel="stylesheet" href="styles/main.css">
-  <link rel="stylesheet" href="styles/spaceview.css">
-  <link rel="stylesheet" href="styles/threatdetector.css">
-  <link rel="stylesheet" href="styles/gun.css">
-  <link rel="stylesheet" href="styles/features.css">
-  <link rel="stylesheet" href="styles/reactor.css">
-  <link rel="stylesheet" href="styles/game.css">
-  <link rel="stylesheet" href="styles/lobby.css">
-  <link rel="stylesheet" href="styles/plasmatank.css">
-  <link rel="stylesheet" href="styles/animations.css">
-  <link rel="stylesheet" href="styles/vendor/bootstrap.min.css">
-  <link rel="stylesheet" href="styles/vendor/slick.css">
-  <link rel="stylesheet" href="styles/vendor/slick-theme.css">
+  <!-- build:css app.css -->
+  <link rel="stylesheet" href="src/app.css">
+  <link rel="stylesheet" href="src/animations.css">
+  <link rel="stylesheet" href="src/lobby/lobby.css">
+  <link rel="stylesheet" href="src/game/game.css">
+  <link rel="stylesheet" href="src/game/spaceview.css">
+  <link rel="stylesheet" href="src/game/features/features.css">
+  <link rel="stylesheet" href="src/game/features/gun.css">
+  <link rel="stylesheet" href="src/game/features/plasmatank.css">
+  <link rel="stylesheet" href="src/game/features/reactor.css">
+  <link rel="stylesheet" href="src/game/features/threatdetector.css">
+  <!-- endbuild -->
+
+  <!-- build:css vendor.css -->
+  <link rel="stylesheet" href="../vendor/styles/bootstrap.min.css">
+  <link rel="stylesheet" href="../vendor/styles/slick.css">
+  <link rel="stylesheet" href="../vendor/styles/slick-theme.css">
+  <!-- endbuild -->
 </head>
 
 <body ng-app="vrApp">
   <div class="view-container" ng-view=""></div>
-  <script src="scripts/app.js"></script>
+
+  <!-- build:js browsersync.js -->
+  <script type="text/javascript" src="../vendor/scripts/set-browsersync-host.js"></script>
+  <script type="text/javascript" src="../vendor/scripts/browser-sync-client.js"></script>
+  <!-- endbuild -->
+
+  <script src="app.js"></script>
+  <script src="templates.js"></script>
 </body>
 </html>

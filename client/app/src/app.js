@@ -1,6 +1,6 @@
 'use strict';
 
-window.jQuery = require('jquery');
+window.$ = window.jQuery = require('jquery');
 
 require('moment');
 require('angular');
@@ -9,10 +9,7 @@ require('angular-messages');
 require('angular-messages');
 require('angular-resource');
 require('angular-route');
-require('angular-slick-carousel')
 require('angular-sanitize');
-require('angucomplete-alt');
-require('angular-elastic');
 require('angular-bootstrap-switch')
 require('slick-carousel');
 require('angular-slick-carousel')
@@ -25,8 +22,7 @@ angular
       'ngResource',
       'ngRoute',
       'ngSanitize',
-      'angucomplete-alt',
-      'monospaced.elastic',
+      'vrApp/templates',
       'frapontillo.bootstrap-switch',
       'slickCarousel',
     ])
@@ -38,12 +34,11 @@ angular
             })
             .when('/games/:gameId/', {
                 name: 'game',
-                template: '<game></game>',
+                template: (params) => `<game game-id="${params.gameId}"></game>`,
             })
-            .when('/', {redirectTo: '/games/'})
-            .otherwise({templateUrl: '/views/404.html'});
+            .when('/', {redirectTo: '/games/play/'})
+            .otherwise({templateUrl: '404.html'});
     });
 
-require('./directives/gamelist.js');
-require('./directives/game.js');
-require('./services/api.js');
+require('./gamelist/gamelist.js');
+require('./game/game.js');

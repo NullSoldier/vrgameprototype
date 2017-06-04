@@ -16,3 +16,7 @@ Features
   - get mone from enemies that you use to upgrade things at end of level or buy fuel cores
  * Add science station
   - Remove shield from enemy for one turn
+
+
+Dont upgrade gulp-useref
+https://github.com/jonkemp/gulp-useref/issues/201

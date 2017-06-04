@@ -3,19 +3,19 @@ var io = require('socket.io-client');
 
 var app = angular.module('vrApp');
 
-app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
+app.directive('game', ['$timeout',  function ($timeout) {
     return {
         restrict: 'E',
-        templateUrl: 'views/gamelist.html',
+        templateUrl: 'game/game.html',
         scope: {},
         bindToController: {},
-        controllerAs: 'gameListCtrl',
+        controllerAs: 'gameCtrl',
 
         controller: function($scope) {
             var self = this;
             var socket = null;
 
-            $scope.debug = false;
+            $scope.debug = true;
             $scope.room = 'TOP_LEFT';
             $scope.player = null;
             $scope.state = 'NOT_CONNECTED';
@@ -49,7 +49,7 @@ app.directive('gameList', ['$timeout', 'Api', function ($timeout, Api) {
 
                 let progress = Math.max(distance / track.length, 0);
 
-                const SHIP_WIDTH = window.jQuery('.ship-room')[0].getBoundingClientRect().width * 2;
+                const SHIP_WIDTH = $('.ship-room')[0].getBoundingClientRect().width * 2;
                 return lerp(SHIP_WIDTH, window.innerWidth * 3, progress);
             }
 
