@@ -1,9 +1,10 @@
-	const _        = require('lodash');
-	const express  = require('express');
-	const Game     = require('./game');
-	const http     = require('http');
-	const Player   = require('./player');
-	const socketIo = require('socket.io');
+const _        = require('lodash');
+const express  = require('express');
+const Game     = require('./game');
+const http     = require('http');
+const path     = require('path');
+const Player   = require('./player');
+const socketIo = require('socket.io');
 
 const settings = {
 	PORT: process.env.PORT || 8000,
