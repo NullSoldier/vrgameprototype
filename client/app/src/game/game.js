@@ -15,7 +15,7 @@ app.directive('game', ['$timeout',  function ($timeout) {
             var self = this;
             var socket = null;
 
-            $scope.debug = true;
+            $scope.debug = false;
             $scope.room = 'TOP_LEFT';
             $scope.player = null;
             $scope.state = 'NOT_CONNECTED';
