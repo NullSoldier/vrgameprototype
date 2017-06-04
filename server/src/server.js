@@ -20,6 +20,10 @@ class Server {
 
 		this.lastTime = null;
 		this.express.use(express.static(settings.PUBLIC_ROOT));
+
+		this.express.get('/*', function(req, res) {
+			res.sendFile(path.resolve(settings.PUBLIC_ROOT + '/index.html'));
+		});
 	}
 
 	start() {

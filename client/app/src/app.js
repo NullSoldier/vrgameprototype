@@ -26,17 +26,22 @@ angular
       'frapontillo.bootstrap-switch',
       'slickCarousel',
     ])
-    .config(function ($routeProvider, $httpProvider) {
+    .config(function ($routeProvider, $httpProvider, $locationProvider) {
+        $locationProvider.html5Mode({
+          enabled: true,
+          requireBase: false
+        });
+
         $routeProvider
-            .when('/games/', {
+            .when('/', {
                 name: 'gameslist',
                 template: '<game-list></game-list>',
             })
-            .when('/games/:gameId/', {
+            .when('/:gameId', {
                 name: 'game',
                 template: (params) => `<game game-id="${params.gameId}"></game>`,
             })
-            .when('/', {redirectTo: '/games/play/'})
+            .when('/', {redirectTo: '/play'})
             .otherwise({templateUrl: '404.html'});
     });
 
