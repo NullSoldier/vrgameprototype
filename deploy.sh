@@ -4,7 +4,7 @@ git branch -D deploy || true
 git checkout -b deploy
 
 cd client
-gulp build
+gulp 
 git add dist -f
 cd ..
 
